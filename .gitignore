@@ -1,0 +1,6 @@
+## Sublime & Dotfiles
+*.DS_Store
+*.tmproj
+*.sublime-workspace
+*.sublime-project
+rocket/packages

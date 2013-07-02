@@ -1,0 +1,60 @@
+{% import "_includes/forms" as forms %}
+
+{# Define the plugin name to use in the description or use generic sentance #}
+{% set pluginName = ( settings.pluginName is defined ) ? settings.pluginName : "this plugin" %}
+
+{% block content %}
+	<h2>ABOUT SPAM GUARD (alpha)</h2>
+	<p>
+		<em>Spam Guard</em> allows you to use the powerful <a href="http://akismet.com">Akismet</a> service API to fight spam.<br>
+		You can check blog post comments, contanct form submissions and other submitted data for <em>spammy</em> content.
+	</p>
+
+	<hr>
+
+	<h3>PLUGIN SETTINGS</h3>
+	{{
+		forms.textField({
+			id:				"pluginNickname",
+			name:			"pluginNickname",
+			label:			"Plugin Nickname"|t,
+			instructions:	"Rename <em>#{pluginName}</em> to something easier for you to remember."|t,
+			value:			settings.pluginNickname,
+			first:			true,
+			autofocus:		false,
+			errors:			""
+		})
+	}}
+	{{
+		forms.textField({
+			id:				"akismetApiKey",
+			name:			"akismetApiKey",
+			label:			"Akismet API Key"|t,
+			instructions:	"The <a href='http://akismet.com'>Akismet</a> service requires a <em>WordPress</em> API Key."|t,
+			value:			settings.akismetApiKey,
+			first:			false,
+			autofocus:		false,
+			errors:			""
+		})
+	}}
+	{{
+		forms.textField({
+			id:				"akismetOriginUrl",
+			name:			"akismetOriginUrl",
+			label:			"Origin URL"|t,
+			instructions:	"Your website (<a href='#{siteUrl}'>#{siteUrl}</a>) or blog URL"|t,
+			value:			settings.akismetOriginUrl,
+			first:			false,
+			autofocus:		false,
+			errors:			""
+		})
+	}}
+
+	<hr>
+
+	<p>
+		&copy; {{ "now" | date("Y") }} {{ pluginName }} <em>by</em>
+		<a href="http://twitter.com/selvinortiz" title="@selvinortiz" target="_blank">Selvin Ortiz</a>
+	</p>
+
+{% endblock %}

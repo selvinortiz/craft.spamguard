@@ -1,0 +1,43 @@
+[
+    {
+        "name": "tijsverkoyen/akismet",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/tijsverkoyen/Akismet.git",
+            "reference": "1.1.0"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/tijsverkoyen/Akismet/zipball/1.1.0",
+            "reference": "1.1.0",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "php": ">=5.2.0"
+        },
+        "time": "2012-10-13 17:59:41",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "classmap": [
+                ""
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD"
+        ],
+        "authors": [
+            {
+                "name": "Tijs Verkoyen",
+                "email": "akismet@verkoyen.eu",
+                "role": "Developer"
+            }
+        ],
+        "description": "Akismet is a wrapper-class to communicate with the Akismet API.",
+        "homepage": "https://github.com/tijsverkoyen/Akismet"
+    }
+]
