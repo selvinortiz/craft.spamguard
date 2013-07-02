@@ -9,6 +9,10 @@ on your blog, form submissions or any submitted data that could be potential **s
 - Install the `spamguard` plugin via the control panel
 - Visit the settings page to add your `API Key` and `Origin URL`
 
+### About Rocket
+You may have noticed that withing the `spamguard` folder there is a folder called `rocket`.
+This folder contains composer packages used by this plugin and some helper classes & functions.
+
 ### Usage/Example
 If you had a blog and were concerned about `comment` spam, from your templates you could...
 
@@ -20,6 +24,6 @@ From your controller you could call the service like so...
 
 ...when a form is posted/submitted!
 
-### @=TODO
+### @=Todo
 There are a few functions available from the API but I have not had the change to implement the wrappers for them yet.
 These functions help mainly with false/positive reporting `submitHam()` and sneaky content  `submitSpam()` that gets through the filter.
