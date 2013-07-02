@@ -2,7 +2,9 @@
 
 ### About Spam Guard
 *Spam Guard* allows you to take advantage of the powerful [Akismet](http://akismet.com) service API to fight spam
-on your blog, form submissions or any submitted content that could be potential **spam**.
+on your website.
+
+You can check/flag entry comments, form submissions and any content that may be potential **Spam**.
 
 ### About Rocket
 You may have noticed a `rocket` folder within the plugin folder structure...
@@ -10,7 +12,7 @@ I use this folder to place `bootstrap` classes, `helper functions` and vendor `p
 
 ### Installation
 - Clone or download the repo
-- Throw the inner `spamguard` folder inside your `craft/plugins`
+- Throw the `spamguard` folder inside your `craft/plugins`
 - You may have to `cd` into `craft/plugins/spamguard/rocket` and `composer install/update`
 - Install the `spamguard` plugin via the control panel
 - Visit the settings page to add your `API Key` and `Origin URL`
