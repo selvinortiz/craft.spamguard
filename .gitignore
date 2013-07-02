@@ -3,4 +3,4 @@
 *.tmproj
 *.sublime-workspace
 *.sublime-project
-spamguard/rocket/packages
+*/rocket/packages
