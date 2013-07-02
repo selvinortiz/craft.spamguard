@@ -2,12 +2,13 @@
 
 {# Define the plugin name to use in the description or use generic sentance #}
 {% set pluginName = ( settings.pluginName is defined ) ? settings.pluginName : "this plugin" %}
-
+{% set originUrl  = ( settings.akismetOriginUrl|length ) ? settings.akismetOriginUrl : siteUrl %}
 {% block content %}
 	<h2>ABOUT SPAM GUARD (alpha)</h2>
 	<p>
-		<em>Spam Guard</em> allows you to use the powerful <a href="http://akismet.com">Akismet</a> service API to fight spam.<br>
-		You can check blog post comments, contanct form submissions and other submitted data for <em>spammy</em> content.
+		<em>Spam Guard</em> allows you to take advantage of the powerful
+		<a href="http://akismet.com">Akismet</a> service API to fight spam on your website.<br>
+		You can check/flag entry comments, form submissions and any content that may be potential <strong>Spam</strong>.
 	</p>
 
 	<hr>
@@ -20,7 +21,7 @@
 			label:			"Plugin Nickname"|t,
 			instructions:	"Rename <em>#{pluginName}</em> to something easier for you to remember."|t,
 			value:			settings.pluginNickname,
-			first:			true,
+			first:			false,
 			autofocus:		false,
 			errors:			""
 		})
@@ -32,8 +33,8 @@
 			label:			"Akismet API Key"|t,
 			instructions:	"The <a href='http://akismet.com'>Akismet</a> service requires a <em>WordPress</em> API Key."|t,
 			value:			settings.akismetApiKey,
-			first:			false,
-			autofocus:		false,
+			first:			true,
+			autofocus:		true,
 			errors:			""
 		})
 	}}
@@ -43,7 +44,7 @@
 			name:			"akismetOriginUrl",
 			label:			"Origin URL"|t,
 			instructions:	"Your website (<a href='#{siteUrl}'>#{siteUrl}</a>) or blog URL"|t,
-			value:			settings.akismetOriginUrl,
+			value:			originUrl,
 			first:			false,
 			autofocus:		false,
 			errors:			""

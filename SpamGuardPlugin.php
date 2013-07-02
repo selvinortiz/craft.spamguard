@@ -93,7 +93,8 @@ class SpamGuardPlugin extends BasePlugin
 
     public function prepSettings( $settings=array() )
     {
-        if ( array_key_exists('pluginName', $settings) && ! empty($settings['pluginName']) ) {
+        if ( array_key_exists('pluginName', $settings) && ! empty($settings['pluginName']) )
+        {
             return $settings;
         }
 
@@ -106,10 +107,12 @@ class SpamGuardPlugin extends BasePlugin
         $pluginClass 	= Rocket::getClassName($this);
         $pluginSettings	= array( 'pluginName'=>$this->getName(), 'pluginNickname'=>$this->getName() );
 
-        return $dbCommand->update(
+        $dbCommand->update(
             'plugins', array('settings'=>toJson($pluginSettings)),
             'class=:className', array(':className'=>$pluginClass)
         );
+
+        craft()->request->redirect( strtolower('/admin/'.SpamGuardPlugin::PLUGIN_HANDLE) );
     }
 
     public function hookRegisterCpRoutes()
