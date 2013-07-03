@@ -1,9 +1,7 @@
 ## Spam Guard *for* Craft
 
 ### About Spam Guard
-*Spam Guard* allows you to take advantage of the powerful [Akismet](http://akismet.com) service API to fight spam
-on your website.
-
+*Spam Guard* allows you to take advantage of the powerful [Akismet](http://akismet.com) service API to fight spam on your website.
 You can check/flag entry comments, form submissions and any content that may be potential **Spam**.
 
 ### About Rocket
@@ -11,7 +9,13 @@ You may have noticed a `rocket` folder within the plugin folder structure...
 I use this folder to place `bootstrap` classes, `helper functions` and vendor `packages` when necessary.
 
 ### Changlog 0.2
-
+- Renames the `service` class
+- Extends a new Akismet Class
+- Adds the spam controller
+- Adds the spam model
+- Removes composer autoloader
+- Loads Akismet via `Rocket::loadClass()`
+- Cleans up whitespace and tabs
 
 ### Changelog 0.1
 Initial preview release

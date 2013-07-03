@@ -7,11 +7,11 @@ class SpamGuardVariable
 	{
 		try
 		{
-			$spamModel = SpamGuard_SpamModel::populateModel($data);
+			$model = SpamGuardModel::populateModel($data);
 
-			if ( $spamModel->validate() )
+			if ( $model->validate() )
 			{
-				return (bool) craft()->spamGuard_spam->isSpam($spamModel);
+				return (bool) craft()->spamGuard->isSpam($model);
 			}
 
 			return false;

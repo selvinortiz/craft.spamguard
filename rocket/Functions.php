@@ -11,10 +11,10 @@ namespace Craft;
 
 if ( ! function_exists('toJson') )
 {
-    function toJson( $data=array() )
-    {
-        return \CJSON::encode($data);
-    }
+	function toJson( $data=array() )
+	{
+		return \CJSON::encode($data);
+	}
 }
 
 //--------------------------------------------------------------------------------
@@ -29,10 +29,10 @@ if ( ! function_exists('toJson') )
 
 if ( ! function_exists('getJson') )
 {
-    function getJson( $str, $asarray=false )
-    {
-        return \CJSON::decode($str, $asarray);
-    }
+	function getJson( $str, $asarray=false )
+	{
+		return \CJSON::decode($str, $asarray);
+	}
 }
 
 //--------------------------------------------------------------------------------
@@ -44,12 +44,12 @@ if ( ! function_exists('getJson') )
 
 if ( ! function_exists('dd') )
 {
-    function dd($var, $die=true)
-    {
-        Craft::dump($var);
+	function dd($var, $die=true)
+	{
+		Craft::dump($var);
 
-        if ($die) {
-            exit;
-        }
-    }
+		if ($die) {
+			exit;
+		}
+	}
 }

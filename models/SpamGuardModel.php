@@ -1,7 +1,7 @@
 <?php
 namespace Craft;
 
-class SpamGuard_SpamModel extends BaseModel
+class SpamGuardModel extends BaseModel
 {
 	protected function defineAttributes()
 	{
