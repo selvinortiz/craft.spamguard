@@ -8,7 +8,7 @@ namespace Craft;
  *
  * @author  Selvin Ortiz - http://twitter.com/selvinortiz
  * @package SpamGuard
- * @version 0.1
+ * @version 0.2
  *
  *
  * @example (Template) Retuns true/false
@@ -38,7 +38,7 @@ class SpamGuardPlugin extends BasePlugin
 {
 	const PLUGIN_NAME			= 'Spam Guard';
 	const PLUGIN_HANDLE			= 'spamGuard';
-	const PLUGIN_VERSION		= '0.1';
+	const PLUGIN_VERSION		= '0.2';
 	const PLUGIN_DEVELOPER		= 'Selvin Ortiz';
 	const PLUGIN_DEVELOPER_URL	= 'http://twitter.com/selvinortiz';
 	const PLUGIN_SETTINGS_TMPL	= 'spamguard/settings.twig';
