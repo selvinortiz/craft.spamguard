@@ -14,6 +14,7 @@ namespace Craft;
 class Rocket
 {
     protected static $launched = false;
+    protected static $classMap = array();
 
     public static function Launch()
     {
@@ -21,9 +22,63 @@ class Rocket
             require_once __DIR__.'/Functions.php';
             require_once __DIR__.'/packages/autoload.php';
 
+            self::loadClassMap();
+            self::registerLoader();
+
             self::$launched = true;
         }
     }
+
+    //--------------------------------------------------------------------------------
+
+    public function loadClassMap()
+    {
+        self::$classMap = require_once __DIR__.'/ClassMap.php';
+    }
+
+    //--------------------------------------------------------------------------------
+    
+    public static function registerLoader()
+    {
+        spl_autoload_register( array('Craft\\Rocket', 'loadClass') );
+    }
+
+    //--------------------------------------------------------------------------------
+    
+    public static function loadClass($className)
+    {
+        $className = ltrim($className, '\\');
+
+        if ( array_key_exists($className, self::$classMap) )
+        {
+            require_once self::getBasePath(self::$classMap[$className]);
+        }
+        else
+        {
+            $name = strtolower($className);
+            $path = self::getBasePath("ext/{$name}/{$name}.php");
+
+            if ( file_exists( $path ) )
+            {
+                require $path;
+            }
+        }
+
+        return false;
+    }
+
+    //--------------------------------------------------------------------------------
+    
+    public static function getBasePath( $append='' )
+    {
+        if ( ! empty($append) )
+        {
+            return __DIR__.'/'.ltrim($append, '');
+        }
+
+        return __DIR__.'/';
+    }
+
 
     //--------------------------------------------------------------------------------
 

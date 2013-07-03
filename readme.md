@@ -10,6 +10,12 @@ You can check/flag entry comments, form submissions and any content that may be 
 You may have noticed a `rocket` folder within the plugin folder structure...
 I use this folder to place `bootstrap` classes, `helper functions` and vendor `packages` when necessary.
 
+### Changlog 0.2
+
+
+### Changelog 0.1
+Initial preview release
+
 ### Installation
 - Clone or download the repo
 - Throw the `spamguard` folder inside your `craft/plugins`
@@ -20,11 +26,13 @@ I use this folder to place `bootstrap` classes, `helper functions` and vendor `p
 ### Usage/Example
 If you had a blog and were concerned about `comment` spam, from your templates you could...
 
-	craft.SpamGuard.isSpam(content, author[optional], email[optional])
+	craft.SpamGuard.isSpam({content: "Comment or data to check", author: "John Smith", email: "john@smith.com"})
 
 From your controller you could call the service when a form is submitted like so...
 
-	cract()->spamGuard_spam->isSpam($content, $author[optional], $email[optional])
+	cract()->spamGuard_spam->isSpam(SpamGuard_SpamModel $model)
+
+You can submit a form to the controller action `/spamGuard/spam/isSpam` to run the check.
 
 ### @Todo
 There are a few other functions available from the API but I have not had the chance to implement the wrappers for them yet.

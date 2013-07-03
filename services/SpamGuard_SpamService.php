@@ -1,35 +1,33 @@
 <?php
 namespace Craft;
 
-use tijsverkoyen\akismet\Akismet;
-
 class SpamGuard_SpamService extends BaseApplicationComponent
 {
     protected $plugin;
     protected $provider;
     protected $settings = array();
 
+    //--------------------------------------------------------------------------------
+
     public function __construct()
     {
         $this->plugin 	= craft()->plugins->getPlugin(SpamGuardPlugin::PLUGIN_HANDLE);
+
         $this->settings = $this->plugin->getSettings();
 
-        if ( class_exists('tijsverkoyen\\akismet\\Akismet') )
+        if ( class_exists('Akismet') )
         {
-            if ( empty($this->settings['akismetApiKey']) )
+            if ( isset($this->settings['akismetApiKey']) )
             {
                 throw new \Exception('Please head to the plugin settings and add your API Key @ '.__METHOD__);
             }
 
-            if ( empty($this->settings['akismetOriginUrl']) )
+            if ( isset($this->settings['akismetOriginUrl']) )
             {
                 $this->settings['akismetOriginUrl'] = craft()->requrest->getHostInfo();
             }
 
-            $this->provider	= new Akismet(
-                $this->settings['akismetApiKey'],
-                $this->settings['akismetOriginUrl']
-            );
+            $this->provider	= new \Akismet($this->settings['akismetOriginUrl'], $this->settings['akismetApiKey']);
         }
         else
         {
@@ -37,15 +35,23 @@ class SpamGuard_SpamService extends BaseApplicationComponent
         }
     }
 
-    public function isSpam($content, $author='', $email='')
+    //--------------------------------------------------------------------------------
+
+    public function isSpam(SpamGuard_SpamModel $model)
     {
         if ( is_object($this->provider) )
         {
-            $this->provider->setUserAgent($_SERVER['HTTP_USER_AGENT']);
+            $this->provider->setCommentContent($model->content);
+            $this->provider->setCommentAuthor($model->author);
+            $this->provider->setCommentAuthorEmail($model->email);
 
-            if ( $this->provider->isSpam( $content, $author, $email ) )
+            // metadata
+            $this->provider->setUserIp($_SERVER['REMOTE_ADDR']);
+            $this->provider->setCommentUserAgent($_SERVER['HTTP_USER_AGENT']);
+
+            if ( $this->provider->isCommentSpam() )
             {
-                if ( $this->provider->verifyKey() )
+                if ( $this->provider->isKeyValid() )
                 {
                     return true;
                 }

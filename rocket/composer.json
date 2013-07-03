@@ -1,6 +1,5 @@
 {
 	"require" : {
-		"tijsverkoyen/akismet": "dev-master"
 	},
 	"config" : {
 		"vendor-dir" : "packages"
