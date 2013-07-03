@@ -38,8 +38,34 @@ if ( ! function_exists('getJson') )
 //--------------------------------------------------------------------------------
 
 /**
+ * arrayGet()
+ * Helper utility to get an array value by key or a defualt the key is not found
+ *
+ * @param	string	$key	The array key to search for
+ * @param	array	$arr	The array to search in
+ * @param	mix 	$def	The default value to return if the key is not found
+ *
+ * @return	mix 	$def
+ */
+
+if ( ! function_exists('arrayGet') )
+{
+	function arrayGet( $key, $arr=array(), $def=false )
+	{
+		if ( is_string($key) && array_key_exists($key, $arr) )
+		{
+			return $arr[ $key ];
+		}
+
+		return $def;
+	}
+}
+
+//--------------------------------------------------------------------------------
+
+/**
  * dd()
- * Debug & Die
+ * Dump & Die
  */
 
 if ( ! function_exists('dd') )

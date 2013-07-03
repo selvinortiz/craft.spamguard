@@ -6,6 +6,3 @@
 *.sublime-workspace
 *.sublime-project
 *.idea
-
-## Vendors
-rocket/packages

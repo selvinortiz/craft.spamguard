@@ -1,7 +1,0 @@
-{
-	"require" : {
-	},
-	"config" : {
-		"vendor-dir" : "packages"
-	}
-}

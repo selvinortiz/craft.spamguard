@@ -8,7 +8,7 @@ namespace Craft;
  *
  * @author  Selvin Ortiz - http://twitter.com/selvinortiz
  * @package SpamGuard
- * @version 0.3
+ * @version 0.4
  *
  *
  * @example (Template) Retuns true/false
@@ -38,7 +38,7 @@ class SpamGuardPlugin extends BasePlugin
 {
 	const PLUGIN_NAME			= 'Spam Guard';
 	const PLUGIN_HANDLE			= 'spamGuard';
-	const PLUGIN_VERSION		= '0.3';
+	const PLUGIN_VERSION		= '0.4';
 	const PLUGIN_DEVELOPER		= 'Selvin Ortiz';
 	const PLUGIN_DEVELOPER_URL	= 'http://twitter.com/selvinortiz';
 	const PLUGIN_SETTINGS_TMPL	= 'spamguard/__settings.twig';
@@ -77,6 +77,14 @@ class SpamGuardPlugin extends BasePlugin
 	public function getDeveloperUrl()
 	{
 		return self::PLUGIN_DEVELOPER_URL;
+	}
+
+	//--------------------------------------------------------------------------------
+
+	public function getCpUrl()
+	{
+		// Is this already available via a Craft service provider?
+		return sprintf('/%s/%s', craft()->config->get('cpTrigger'), strtolower(self::PLUGIN_HANDLE) );
 	}
 
 	//--------------------------------------------------------------------------------
@@ -157,11 +165,17 @@ class SpamGuardPlugin extends BasePlugin
 	 */
 	public function spamGuardPostedContent($params=false)
 	{
+		// I was planning on using onSpam/onClean but went with the more generic onSuccess/onFailure
+		$data 		= array();
+		$onSuccess	= null;
+		$onFailure	= null;
+
 		if ( $params && is_array($params) )
 		{
 			@extract($params);
 		}
 
+		// Should I be calling a controller method here instead of the service?
 		$isContentSpam = craft()->spamGuard->isSpam($data);
 
 		if ( $isContentSpam && $onFailure )

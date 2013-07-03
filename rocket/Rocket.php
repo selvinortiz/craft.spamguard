@@ -20,7 +20,6 @@ class Rocket
     {
         if (self::$launched == false) {
             require_once __DIR__.'/Functions.php';
-            require_once __DIR__.'/packages/autoload.php';
 
             self::loadClassMap();
             self::registerLoader();

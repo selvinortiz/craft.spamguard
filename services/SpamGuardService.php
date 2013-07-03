@@ -3,35 +3,45 @@ namespace Craft;
 
 class SpamGuardService extends BaseApplicationComponent
 {
-	protected $plugin;
+	/**
+	 * The fully qualified class name of the provider to instantiate
+	 */
+	const PROVIDER_CLASS_NAME = 'Akismet';
+
+	/**
+	 * $provider The instance of the service provider (Akismet) used by Spam Guard
+	 * 
+	 * @var object Instance of Akismet
+	 */
 	protected $provider;
-	protected $settings;
 
 	//--------------------------------------------------------------------------------
 
 	public function __construct()
 	{
-		$this->plugin 	= craft()->plugins->getPlugin(SpamGuardPlugin::PLUGIN_HANDLE);
+		$spamGuard	= craft()->plugins->getPlugin(SpamGuardPlugin::PLUGIN_HANDLE);
+		$settings	= $spamGuard->getSettings();
+		$originUrl	= arrayGet('originUrl', $settings);
+		$apiKey		= arrayGet('akismetApiKey', $settings);
 
-		$this->settings = $this->plugin->getSettings();
-
-		if ( class_exists('Akismet') )
+		if ( class_exists( self::PROVIDER_CLASS_NAME ) )
 		{
-			if ( isset($this->settings['akismetApiKey']) )
+			if ( ! $originUrl )
 			{
-				throw new \Exception('Please head to the plugin settings and add your API Key @ '.__METHOD__);
+				$originUrl = craft()->request->getHostInfo();
 			}
 
-			if ( isset($this->settings['akismetOriginUrl']) )
+			if ( ! $apiKey )
 			{
-				$this->settings['akismetOriginUrl'] = craft()->requrest->getHostInfo();
+				// Would like to flash a message/warning when users arrive at the settings page
+				craft()->request->redirect( $spamGuard->getCpUrl() );
 			}
 
-			$this->provider	= new \Akismet($this->settings['akismetOriginUrl'], $this->settings['akismetApiKey']);
+			$this->provider	= new \Akismet($originUrl, $apiKey);
 		}
 		else
 		{
-			throw new \Exception('The Akismet class is not available, check the autoloader and/or namespace @ '.__METHOD__);
+			throw new \Exception( self::PROVIDER_CLASS_NAME.' is not available @ '.__METHOD__);
 		}
 	}
 
@@ -71,19 +81,19 @@ class SpamGuardService extends BaseApplicationComponent
 
 				if ( $this->provider->isCommentSpam() )
 				{
+					// May return false if the key is invalid so check that too
 					if ( $this->provider->isKeyValid() )
 					{
 						return true;
 					}
 					else
 					{
-						throw new \Exception('Your API Key may be invalid or may has expired @'.__METHOD__);
+						throw new \Exception('Your API Key may be invalid or may have expired @'.__METHOD__);
 					}
 				}
 			}
 		}
 
-		// Not spam or no settings yet!
 		return false;
 	}
 }
