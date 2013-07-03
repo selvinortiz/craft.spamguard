@@ -185,7 +185,7 @@ class SpamGuardPlugin extends BasePlugin
 				$onFailure();
 			}
 		}
-		elseif ( $onSuccess )
+		elseif ( ! $isContentSpam && $onSuccess )
 		{
 			if (is_callable($onSuccess))
 			{
