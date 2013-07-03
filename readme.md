@@ -1,6 +1,6 @@
 ## Spam Guard *for* Craft
 
-### About Spam Guard
+### About Spam Guard 0.3
 *Spam Guard* allows you to take advantage of the powerful [Akismet](http://akismet.com) service API to fight spam on your website.
 You can check/flag entry comments, form submissions and any content that may be potential **Spam**.
 
@@ -8,7 +8,14 @@ You can check/flag entry comments, form submissions and any content that may be 
 You may have noticed a `rocket` folder within the plugin folder structure...
 I use this folder to place `bootstrap` classes, `helper functions` and vendor `packages` when necessary.
 
-### Changlog 0.2
+### Changelog 0.3
+- Adds the `spamGuardPostedContent()` action
+- Implements callback execution based on `spamGuardPostedContent()` results
+- Delegates most of the heavy logic to the `SpamGuardService`
+- Cleans up the controller to only process a submit action `actionIsSpam()`
+
+
+### Changelog 0.2
 - Renames the `service` class
 - Extends a new Akismet Class
 - Adds the spam controller
@@ -17,8 +24,10 @@ I use this folder to place `bootstrap` classes, `helper functions` and vendor `p
 - Loads Akismet via `Rocket::loadClass()`
 - Cleans up whitespace and tabs
 
+
 ### Changelog 0.1
 Initial preview release
+
 
 ### Installation
 - Clone or download the repo
@@ -28,15 +37,34 @@ Initial preview release
 - Visit the settings page to add your `API Key` and `Origin URL`
 
 ### Usage/Example
-If you had a blog and were concerned about `comment` spam, from your templates you could...
+**I.** If you want to check for spam from your templates (not likely) you may do something like...
 
-	craft.SpamGuard.isSpam({content: "Comment or data to check", author: "John Smith", email: "john@smith.com"})
+	craft.SpamGuard.isSpam(
+		{
+			content: "Comment or data to check",
+			author: "John Smith",
+			email: "john@smith.com"
+		}
+	);
 
-From your controller you could call the service when a form is submitted like so...
+**II.** You may also want to submit content behind the scenes to the `/spamGuard/isSpam` action with `Ajax` in some cases...
+	
+	cract()->spamGuard->isSpam($data);
 
-	cract()->spamGuard_spam->isSpam(SpamGuard_SpamModel $model)
+**III.** Finally and most often you would want to call the `spamGuardPostedContent()` action and pass along data and a couple of optional callbacks...
 
-You can submit a form to the controller action `/spamGuard/spam/isSpam` to run the check.
+	$args = array(
+		'data' => array(
+			'content'	=> 'This is potential spam, watch out!',
+			'author'	=> 'Joe Blogs',
+			'email'		=> 'tinyjoe@blogs.com'
+		),
+		'onSuccess'		=> function() { // Something awesome... },
+		'onFailure'		=> function() { // Something not so cool... }
+	);
+
+	craft()->plugins->call('spamGuardPostedContent', $args);
+
 
 ### @Todo
 There are a few other functions available from the API but I have not had the chance to implement the wrappers for them yet.

@@ -8,7 +8,7 @@ namespace Craft;
  *
  * @author  Selvin Ortiz - http://twitter.com/selvinortiz
  * @package SpamGuard
- * @version 0.2
+ * @version 0.3
  *
  *
  * @example (Template) Retuns true/false
@@ -18,30 +18,30 @@ namespace Craft;
  * $email: 		The submitted content author email
  *
  * <code>
- *  craft.SpamGuard.isSpam($content, $author[optional], $email[optional])
+ *  craft.SpamGuard.isSpam(
+ *  	{
+ *  		content: "Potential spammy comment or submitted content",
+ *  		author: "John Smith",
+ *  		email: "john@smith.com"
+ *  	}
+ *  )
  * </code>
  *
  * @example (Service) Returns true/false
  *
  * <code>
- *  craft()->spamGuard_spam->isSpam($content, $author[optional], $email[optional])
+ *  craft()->spamGuard->isSpam(SpamGuardModel $model)
  * </code>
- *
- * NOTE
- * ----
- * Even though the $author and $email are both optional, it is recommended that you provide them.
- * Not doing so will impact the amount of false/positives you get as well as the request response time.
- * ----
  */
 
 class SpamGuardPlugin extends BasePlugin
 {
 	const PLUGIN_NAME			= 'Spam Guard';
 	const PLUGIN_HANDLE			= 'spamGuard';
-	const PLUGIN_VERSION		= '0.2';
+	const PLUGIN_VERSION		= '0.3';
 	const PLUGIN_DEVELOPER		= 'Selvin Ortiz';
 	const PLUGIN_DEVELOPER_URL	= 'http://twitter.com/selvinortiz';
-	const PLUGIN_SETTINGS_TMPL	= 'spamguard/settings.twig';
+	const PLUGIN_SETTINGS_TMPL	= 'spamguard/__settings.twig';
 
 	//--------------------------------------------------------------------------------
 	
@@ -140,5 +140,45 @@ class SpamGuardPlugin extends BasePlugin
 	public function hookRegisterCpRoutes()
 	{
 		return array();
+	}
+
+	//--------------------------------------------------------------------------------
+	// @HOOKS
+	//--------------------------------------------------------------------------------
+	
+	/**
+	 * spamGuardPostedContent()
+	 *
+	 * @param  array $params The associative array of data and callbacks
+	 *
+	 * <code>
+	 * 	$params = array( data=>array(content=>'', author=>'', email=>''), onSuccess=>function(){}, onFailure=>function(){})
+	 * </code>
+	 */
+	public function spamGuardPostedContent($params=false)
+	{
+		if ( $params && is_array($params) )
+		{
+			@extract($params);
+		}
+
+		$isContentSpam = craft()->spamGuard->isSpam($data);
+
+		if ( $isContentSpam && $onFailure )
+		{
+			if (is_callable($onFailure))
+			{
+				$onFailure();
+			}
+		}
+		elseif ( $onSuccess )
+		{
+			if (is_callable($onSuccess))
+			{
+				$onSuccess();
+			}
+		}
+
+		return $isContentSpam;
 	}
 }

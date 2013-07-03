@@ -37,27 +37,48 @@ class SpamGuardService extends BaseApplicationComponent
 
 	//--------------------------------------------------------------------------------
 
-	public function isSpam(SpamGuardModel $model)
+	public function isSpam($data=false)
 	{
-		if ( is_object($this->provider) )
+		// Got a model
+		if ( is_object($data) && ($data instanceof SpamGuardModel) )
 		{
-			$this->provider->setCommentContent($model->content);
-			$this->provider->setCommentAuthor($model->author);
-			$this->provider->setCommentAuthorEmail($model->email);
+			$model = $data;
+		}
+		// Array to model
+		elseif ( is_array($data) && count($data) )
+		{
+			$model = SpamGuardModel::populateModel($data);
+		}
+		// Post request to model
+		else
+		{
+			$model = new SpamGuardModel();
 
-			// metadata
-			$this->provider->setUserIp($_SERVER['REMOTE_ADDR']);
-			$this->provider->setCommentUserAgent($_SERVER['HTTP_USER_AGENT']);
+			$model->content	= craft()->request->getPost('content');
+			$model->author	= craft()->request->getPost('author');
+			$model->email	= craft()->request->getPost('email');
+		}
 
-			if ( $this->provider->isCommentSpam() )
+		if ( $model->validate() )
+		{
+			if ( is_object($this->provider) )
 			{
-				if ( $this->provider->isKeyValid() )
+				$this->provider->setCommentContent($model->content);
+				$this->provider->setCommentAuthor($model->author);
+				$this->provider->setCommentAuthorEmail($model->email);
+				$this->provider->setCommentUserAgent($_SERVER['HTTP_USER_AGENT']);
+				$this->provider->setUserIp($_SERVER['REMOTE_ADDR']);
+
+				if ( $this->provider->isCommentSpam() )
 				{
-					return true;
-				}
-				else
-				{
-					throw new \Exception('Your API Key may be invalid or may has expired @'.__METHOD__);
+					if ( $this->provider->isKeyValid() )
+					{
+						return true;
+					}
+					else
+					{
+						throw new \Exception('Your API Key may be invalid or may has expired @'.__METHOD__);
+					}
 				}
 			}
 		}
