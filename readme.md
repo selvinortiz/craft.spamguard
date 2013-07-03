@@ -10,7 +10,7 @@
 *Spam Guard* uses the powerful [Akismet](http://akismet.com) service API to help you fight **spam** on your website.
 
 ### Changelog
-*__Spam Guard__ may not be stable enough for production until version **0.5** is released but you are more than welcome to begin `testing/integrating`.*
+*__Spam Guard__ may not be stable enough for production until version __0.5__ is released but you are more than welcome to begin `testing/integrating`.*
 
 ----
 
@@ -137,11 +137,10 @@ Next, we need to do some *pre-processing* before handing things off to *Spam Gua
 - Screencast showing different use case implementations might be helpful
 - Sample workflows for contact form submissions
 
-*For now though, I would appriciate any feedback you may have so that **Spam Guard** can be production ready quicker.*
+*For now though, I would appriciate any feedback you may have so that __Spam Guard__ can be production ready quicker.*
 
 ### Feedback & Support
 If you have any feedback or questions please reach out to me on twitter [@selvinortiz](http://twitter.com/selvinortiz)
 
 ### MIT License
-This and all other of my plugins are and will be released under the [MIT license](http://opensource.org/licenses/MIT) so that you can use the code however you want
-without worrying about me screwing you over by trying to stop you from using it or attempting to charge you without specifying that a plugin is not open source.
+*Spam Guard for Craft* is released under the [MIT license](http://opensource.org/licenses/MIT) which pretty much means you can do with it as you please and I won't get mad because I'm that nice; )
