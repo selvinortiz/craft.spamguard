@@ -16,10 +16,12 @@
 
 #### 0.4.1
 - Fixes inaccurate fetching of setting values
+- Corrects a `plugins call` example in the readme
 - Adds the `spamGuardSubmittedContent() action
 - Removes code examples in source code
 - Handles missing `API Key` more gracefully
 - Adds placeholder Controller/Actions to be implemented
+- Adds the Akismet model
 
 #### 0.4
 - Adds the `migrations` folder due to some errors while self updating if not present
@@ -128,6 +130,7 @@ Next, we need to do some *pre-processing* before handing things off to *Spam Gua
 		// The (boolean) response will match that of isSpam()
 
 		$response = craft()->plugins->call('spamGuardPostedContent', $params);
+
 		if ( $response['SpamGuard'] )
 		{
 			// spam found by spamGuardPostedContent()

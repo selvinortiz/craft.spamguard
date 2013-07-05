@@ -12,36 +12,42 @@ class SpamGuardService extends BaseApplicationComponent
 
 	public function __construct()
 	{
+		// Get Settings
 		$spamGuard	= craft()->plugins->getPlugin(SpamGuardPlugin::PLUGIN_HANDLE);
 		$settings	= $spamGuard->getSettings();
-		$originUrl	= $settings['akismetOriginUrl'];
-		$apiKey		= $settings['akismetApiKey'];
+		$originUrl	= $settings->akismetOriginUrl ?: craft()->request->getHostInfo();
+		$apiKey		= $settings->akismetApiKey;
 
-		if ( class_exists( self::PROVIDER_CLASS_NAME ) )
+		// Load Model
+		$akismetM	= SpamGuard_AkismetModel::populateModel( array('akismetApiKey'=>$apiKey, 'akismetOriginUrl'=>$originUrl) );
+
+		// Ensure safe use of the Akismet service provider
+		if ( $akismetM->validate() && class_exists( self::PROVIDER_CLASS_NAME ) )
 		{
-			if ( ! $originUrl )
-			{
-				$originUrl = craft()->request->getHostInfo();
-			}
-
-			if ( ! $apiKey )
-			{
-				// Redirect to CP if the user is logged in
-				if ( craft()->userSession->isLoggedIn() )
-				{
-					craft()->request->redirect( $spamGuard->getPluginCpUrl() );
-				}
-				else
-				{
-					Craft::log('Spam Guard: You attempted to use Spam Guard without an API Key', LogLevel::Warning);
-				}
-			}
-
-			$this->provider = ($originUrl && $apiKey) ? new \Akismet($originUrl, $apiKey) : false;
+			$this->provider = new \Akismet($akismetM->akismetOriginUrl, $akismetM->akismetApiKey);
 		}
 		else
 		{
-			throw new \Exception( self::PROVIDER_CLASS_NAME.' is not available @ '.__METHOD__);
+			$this->provider = false;
+
+			if ( ! count($akismetM->getErrors()) )
+			{
+				$this->handleMissingAkismetClass($spamGuard);
+			}
+
+			elseif ( $akismetM->getError('akismetApiKey') )
+			{
+				$this->handleMissingApiKey($spamGuard);
+			}
+
+			elseif ( $akismetM->getError('akismetOriginUrl') )
+			{
+				$this->handleMissingOriginUrl($spamGuard);
+			}
+			else
+			{
+				$this->handleSkyFalling($samGuard);
+			}
 		}
 	}
 
@@ -91,7 +97,7 @@ class SpamGuardService extends BaseApplicationComponent
 					}
 					else
 					{
-						throw new \Exception('Your API Key may be invalid or may have expired @'.__METHOD__);
+						$this->handleInvalidKey($spamGuard);
 					}
 				}
 			}
@@ -101,11 +107,64 @@ class SpamGuardService extends BaseApplicationComponent
 	}
 
 	//--------------------------------------------------------------------------------
+	// @=HELPERS
+	//--------------------------------------------------------------------------------
+	
+	protected function handleInvalidKey($spamGuard)
+	{
+		throw new \Exception('Your API Key may be invalid or may have expired');
+	}
+	
+	//--------------------------------------------------------------------------------
+
+	protected function handleMissingApiKey($spamGuard)
+	{
+		if ( craft()->userSession->isLoggedIn() )
+		{
+			craft()->request->redirect( $spamGuard->getPluginCpUrl() );
+		}
+		else
+		{
+			Craft::log('Spam Guard: You attempted to use Spam Guard without an API Key', LogLevel::Warning);
+		}
+
+	}
+
+	//--------------------------------------------------------------------------------
+	
+	protected function handleMissingOriginUrl()
+	{
+		if ( craft()->userSession->isLoggedIn() )
+		{
+			craft()->request->redirect( $spamGuard->getPluginCpUrl() );
+		}
+		else
+		{
+			Craft::log('Spam Guard: You attempted to use Spam Guard without setting up the origin URL', LogLevel::Warning);
+		}
+	}
+
+	//--------------------------------------------------------------------------------
+	
+	protected function handleMissingAkismetClass()
+	{
+		throw new \Exception('The Akismet was not loaded properly.');
+	}
+
+	//--------------------------------------------------------------------------------
+	
+	protected function handleSkyFalling()
+	{
+		throw new \Exception('We were unable to process your request.');
+	}
+
+	//--------------------------------------------------------------------------------
 
 	protected function setModel(SpamGuardModel $model)
 	{
 		$this->model =& $model;
 	}
+
 	//--------------------------------------------------------------------------------
 	
 	public function getModel()
