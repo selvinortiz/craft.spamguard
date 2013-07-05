@@ -137,7 +137,7 @@ class SpamGuardPlugin extends BasePlugin
 	 * Same behavior as spamGuardSubmittedContent() but differs in the way parameters are passed
 	 * This function is more verbose and it's signature may be easier to understand and utilize
 	 */
-	public function spamGuardSubmittedContent($content, $author='', $email='', $onSuccess=false, $onFailure=false)
+	public function spamGuardSubmittedContent($content, $author, $email, $onSuccess=false, $onFailure=false)
 	{
 		$params = array();
 

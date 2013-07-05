@@ -126,7 +126,9 @@ Next, we need to do some *pre-processing* before handing things off to *Spam Gua
 
 		// spamGuardPostedContent() runs isSpam() behind the scenes
 		// The (boolean) response will match that of isSpam()
-		if ( craft()->plugins->call('spamGuardPostedContent', $params) )
+
+		$response = craft()->plugins->call('spamGuardPostedContent', $params);
+		if ( $response['SpamGuard'] )
 		{
 			// spam found by spamGuardPostedContent()
 			// onFailure() was called and true was returned
