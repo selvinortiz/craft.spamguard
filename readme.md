@@ -1,18 +1,25 @@
 ## Spam Guard *for* Craft
 *by* [Selvin Ortiz](http://twitter.com/selvinortiz)
 
-### Version 0.4
+### Version 0.4.1
 *Requirements*
 - PHP 5.3
 - Craft 1.0
 
 ### Description
-*Spam Guard* uses the powerful [Akismet](http://akismet.com) service API to help you fight **spam** on your website.
+*Spam Guard* allows you to harness the power of [Akismet](http://akismet.com) to help you fight **spam**.
 
 ### Changelog
 *__Spam Guard__ may not be stable enough for production until version __0.5__ is released but you are more than welcome to begin `testing/integrating`.*
 
 ----
+
+#### 0.4.1
+- Fixes inaccurate fetching of setting values
+- Adds the `spamGuardSubmittedContent() action
+- Removes code examples in source code
+- Handles missing `API Key` more gracefully
+- Adds placeholder Controller/Actions to be implemented
 
 #### 0.4
 - Adds the `migrations` folder due to some errors while self updating if not present

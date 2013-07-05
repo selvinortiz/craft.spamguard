@@ -3,17 +3,10 @@ namespace Craft;
 
 class SpamGuardService extends BaseApplicationComponent
 {
-	/**
-	 * The fully qualified class name of the provider to instantiate
-	 */
-	const PROVIDER_CLASS_NAME = 'Akismet';
+	const PROVIDER_CLASS_NAME = 'Akismet';	// The service provider class name (FQ)
 
-	/**
-	 * $provider The instance of the service provider (Akismet) used by Spam Guard
-	 * 
-	 * @var object Instance of Akismet
-	 */
-	protected $provider;
+	protected $model;						// SpamGuardModel instance
+	protected $provider;					// Akismet instance
 
 	//--------------------------------------------------------------------------------
 
@@ -21,8 +14,8 @@ class SpamGuardService extends BaseApplicationComponent
 	{
 		$spamGuard	= craft()->plugins->getPlugin(SpamGuardPlugin::PLUGIN_HANDLE);
 		$settings	= $spamGuard->getSettings();
-		$originUrl	= arrayGet('originUrl', $settings);
-		$apiKey		= arrayGet('akismetApiKey', $settings);
+		$originUrl	= $settings['akismetOriginUrl'];
+		$apiKey		= $settings['akismetApiKey'];
 
 		if ( class_exists( self::PROVIDER_CLASS_NAME ) )
 		{
@@ -33,11 +26,18 @@ class SpamGuardService extends BaseApplicationComponent
 
 			if ( ! $apiKey )
 			{
-				// Would like to flash a message/warning when users arrive at the settings page
-				craft()->request->redirect( $spamGuard->getCpUrl() );
+				// Redirect to CP if the user is logged in
+				if ( craft()->userSession->isLoggedIn() )
+				{
+					craft()->request->redirect( $spamGuard->getPluginCpUrl() );
+				}
+				else
+				{
+					Craft::log('Spam Guard: You attempted to use Spam Guard without an API Key', LogLevel::Warning);
+				}
 			}
 
-			$this->provider	= new \Akismet($originUrl, $apiKey);
+			$this->provider = ($originUrl && $apiKey) ? new \Akismet($originUrl, $apiKey) : false;
 		}
 		else
 		{
@@ -69,6 +69,9 @@ class SpamGuardService extends BaseApplicationComponent
 			$model->email	= craft()->request->getPost('email');
 		}
 
+		// Bind the model
+		$this->setModel($model);
+
 		if ( $model->validate() )
 		{
 			if ( is_object($this->provider) )
@@ -83,7 +86,7 @@ class SpamGuardService extends BaseApplicationComponent
 				{
 					// May return false if the key is invalid so check that too
 					if ( $this->provider->isKeyValid() )
-					{
+					{						
 						return true;
 					}
 					else
@@ -95,5 +98,18 @@ class SpamGuardService extends BaseApplicationComponent
 		}
 
 		return false;
+	}
+
+	//--------------------------------------------------------------------------------
+
+	protected function setModel(SpamGuardModel $model)
+	{
+		$this->model =& $model;
+	}
+	//--------------------------------------------------------------------------------
+	
+	public function getModel()
+	{
+		return $this->model instanceof SpamGuardModel ? $this->model : false;
 	}
 }

@@ -6,10 +6,21 @@ class SpamGuardController extends BaseController
 	protected $allowAnonymous = true;
 	
 	//--------------------------------------------------------------------------------
+	// @TODO: Implement the following functions
+	//--------------------------------------------------------------------------------
 	
-	public function actionIsSpam()
+	public function actionSpamGuardTest()
 	{
-		// Will use the POST data so content, author, and email must be available
-		return craft()->spamGuard->isSpam();
+		// ...
+	}
+
+	public function actionSubmitHam()
+	{
+		// ...
+	}
+
+	public function actionSubmitSpam()
+	{
+		// ...
 	}
 }
