@@ -64,6 +64,17 @@ Initial preview release
  
  ----
 
+### Installation
+- Clone `git@github.com:selvinortiz/spamguard.git` or [download](https://github.com/selvinortiz/spamguard/archive/master.zip) the *Spam Guard* repo 
+- Throw the contents inside your `craft/plugins/spamguard`
+- Make sure *Craft* has `read/write` permissions on `craft/plugins/spamguard`
+- Install the `spamguard` plugin via the control panel
+- Add your `API Key` and `Origin URL`
+
+*If you attempt to use __Spam Guard__ without setting an `API Key` it will redirect you to the `settings` page so that you may add it.*
+
+----
+
 ### Spam Guard API
 
 #### `spamGuardDetectSpam(content, author, email, [onSuccess], [onFailure])`
@@ -99,7 +110,7 @@ This function can be called from your own Controller but pay attention to its si
 	$args = array(
 		'content'	=> 'I get so angry when the liquor cabinet is empty.',
 		'author'	=> 'Angry Brad',
-		'email'		=> 'angry@brand.com'
+		'email'		=> 'angry@brad.com',
 		'onSuccess'	=> function() {},
 		'onFailure'	=> function() {}
 	);
@@ -118,18 +129,8 @@ This function can be called from your own Controller but pay attention to its si
 
 ----
 
-### Installation
-- Clone `git@github.com:selvinortiz/spamguard.git` or [download](https://github.com/selvinortiz/spamguard/archive/master.zip) the *Spam Guard* repo 
-- Throw the contents inside your `craft/plugins/spamguard`
-- Make sure *Craft* has `read/write` permissions on `craft/plugins/spamguard`
-- Install the `spamguard` plugin via the control panel
-- Add your `API Key` and `Origin URL`
-
-*If you attempt to use __Spam Guard__ without setting an `API Key` it will redirect you to the `settings` page so that you may add it.*
-
 ### Workflow Examples
-
-_Coming soon... I have a day job remember?_
+_Non yet but I plan on adding some as soon as I get a chance... in the meantime, if you need help with implementation just drop me a line!_
 
 ### TODO
 - Work on production ready release candidate (0.5)
