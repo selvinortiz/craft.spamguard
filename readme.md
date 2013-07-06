@@ -40,7 +40,7 @@ and it also ensures that the functions have easy to understand names that hint a
 - Adds `arrayGet($key, $arr=array(), $def=false)` as a helper function
 - Cleans up the `SpamGuardService` constructor
 - Removes `rocket/packages` from the `.gitignore` since composer is not being used
-- Redirects you to the `settings` page for S**pam Guard** if no `API Key` has been set
+- Redirects you to the `settings` page for __Spam Guard__ if no `API Key` has been set
 - Updates the readme examples
 
 #### 0.3
