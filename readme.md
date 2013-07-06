@@ -61,6 +61,60 @@ and it also ensures that the functions have easy to understand names that hint a
 
 #### 0.1
 Initial preview release
+ 
+ ----
+
+### Spam Guard API
+
+#### `spamGuardDetectSpam(content, author, email, [onSuccess], [onFailure])`
+`@spamguard/SpamGuardPlugin.php`
+
+----
+
+##### `$content` _required_
+
+The content to check for spam... this could be a post comment, message from a contact form or similar content.
+
+##### `$author` _required_
+The name of the author of the content you are checking for spam
+
+##### `$email` _required_
+The email address of the author of the content you are checking for spam
+
+##### `$onSuccess`
+The `callback` function that gets called when spam is **not** detected...
+this function will have access to the `SpamGuardModel` instance from its scope.
+
+
+##### `$onFailure`
+The `callback` function that gets called when spam **is** detected...
+this function will have access to the `SpamGuardModel` instance from its scope.
+
+_Callbak functions may end execution or perform redirects but if they don't..
+they will be executed and the value of the spam detection method will be returned._
+
+#### Example
+This function can be called from your own Controller but pay attention to its signature and the way _Craft_ calls methods on plugins.
+
+	$args = array(
+		'content'	=> 'I get so angry when the liquor cabinet is empty.',
+		'author'	=> 'Angry Brad',
+		'email'		=> 'angry@brand.com'
+		'onSuccess'	=> function() {},
+		'onFailure'	=> function() {}
+	);
+
+	$response = craft()->plugins->call('spamGuardDetectSpam', $args)
+
+	// The $response will be an array of plugin reponses matching the method name you called
+	// In our case, it might return something like this...
+
+	array(
+		'SpamGuard'	=> false
+	);
+
+	// It returns false probably because Brad might be an angry drunken fool but his content is solid;)
+
 
 ----
 
@@ -73,84 +127,9 @@ Initial preview release
 
 *If you attempt to use __Spam Guard__ without setting an `API Key` it will redirect you to the `settings` page so that you may add it.*
 
-### Usage/Example
+### Workflow Examples
 
-**Spam Guard** exposes the `spamGuardPostedContent()` action which we can use to check submitted content for spam.
-
-First, we need a form (contact, registration, etc.) to grab the potential **spammy** content.
-
-	<form method="post" action="" class="forms">
-		<input type="hidden" name="action" id="action" value="youController/yourAction"/>
-		<fieldset>
-			<ul>
-				<li>
-					<label for="email">Email</label>
-					<input type="email" name="email" id="email" size="40" value="" />
-				</li>
-				<li>
-					<label for="author">Name</label>
-					<input type="text" name="author" id="author" value="" size="40" />
-				</li>
-				<li>
-					<fieldset>
-						<label for="content">Textarea</label>
-						<textarea id="content" name="content" class="width-100"></textarea>
-					</fieldset>
-				</li>
-				<li>
-					<input type="submit" name="submit" value="Submit" />
-				</li>
-			</ul>
-		</fieldset>
-	</form>
-
-The things to note about this form:
-
-- It submits to your own `Controller/Action` or whatever you want to post to, not a `Controller/Action` provided by *Spam Guard*.
-- It defines the `content`, `author`, and `email` fields which **Spam Gaurd** will check in the POST array and run the *spam check* against it.
-- It only defines the fields we need for *Spam Guard* but in theory this could be a bigger form with many other fields.
-
-Next, we need to do some *pre-processing* before handing things off to *Spam Guard* and tipically that looks something like this...
-
-	// Pseudo Logic
-	1. Validate the POSTed data
-	2. Prepare the content, author, and email parameters for Spam Guard
-	3. Define the functions to pass along to Spam Guard which should be called based on the spam check
-
-		$onSuccess = function()
-		{
-			// No spam found, do the happy dance!
-		}
-
-		$onFailure = function()
-		{
-			// You got spammed, hit your head against the fridge!
-		}
-
-	4. If the form contains the content, author, and email fields, check for spam
-
-		$params = array(
-			'content'	=> craft()->request->getPost('content'),
-			'author'	=> craft()->request->getPost('author'),
-			'email'		=> craft()->request->getPost('email'),
-			'onSuccess'	=> $onSuccess,	// optional
-			'onFailure'	=> $onFailure	// optional
-		);
-
-		$response = craft()->plugins->call('spamGuardDetectSpam', $params);
-
-		if ( $response['SpamGuard'] )
-		{
-			// spam found by spamGuardPostedContent()
-			// onFailure() was called and true was returned
-		}
-		else
-		{
-			// spam not found by spamGuardPostedContent()
-			// onSuccess() was called and false was returned
-		}
-	
-	5. You can now save comment, send email, or whatever your form does if the data is clean
+_Coming soon... I have a day job remember?_
 
 ### TODO
 - Work on production ready release candidate (0.5)
