@@ -11,44 +11,34 @@ class SpamGuardVariable
 	//--------------------------------------------------------------------------------
 	
 	/**
-	 * isSpam()
+	 * detectSpam()
 	 *
-	 * Provided for testing withing a template only
+	 * Provided for testing within a template only
 	 */
-	public function isSpam( $data, $onSuccess=false, $onFailure=false)
+	public function detectSpam($content, $author, $email, $onSuccess=false, $onFailure=false)
 	{
-		$params = array(
-			'data'	=> array(
-				'content'	=> arrayGet('content', $data),
-				'author'	=> arrayGet('author', $data),
-				'email'		=> arrayGet('email', $data)
-			),
-			'onSuccess'		=> $onSuccess,
-			'onFailure'		=> $onFailure
+		// Prepare the model data
+		$modelData = array(
+			'content'	=> $content,
+			'author'	=> $author,
+			'email'		=> $email
 		);
 
-		$model = SpamGuardModel::populateModel($params['data']);
+		$detected	= craft()->spamGuard->detectSpam($modelData);
+		$spamModel	= craft()->spamGuard->getModel();
 
-		if ($model->validate())
+		if ( $detected )
 		{
-			try
-			{
-				if (craft()->spamGuard->isSpam($model))
-				{
-					return 'You got totally spammed!!!';
-				}
-				else
-				{
-					return 'The inbox will be pleased, no spam here!';
-				}
-			}
-			catch (\Exception $e)
-			{
-				return 'Something we totally nuts:<br>'.$e->getMessage();
-			}
-
+			return '<h2>Spam was detected, sorry for the bad news!</h2>';
 		}
-
-		return 'Data is not good enough dude!';
+		else
+		{
+			// We may have gotten false but that happens when the model fails validation to (safety)
+			if ( $spamModel->validate() )
+			{
+				return '<h2>Looks like you are free of spam, that is awesome!</h2>';
+			}
+			return '<h2>Could not figure out if you got spammed or nott!!!</h2>';
+		}
 	}
 }

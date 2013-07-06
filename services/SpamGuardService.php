@@ -53,18 +53,20 @@ class SpamGuardService extends BaseApplicationComponent
 
 	//--------------------------------------------------------------------------------
 
-	public function isSpam($data=false)
+	public function detectSpam($data=false)
 	{
 		// Got a model
 		if ( is_object($data) && ($data instanceof SpamGuardModel) )
 		{
 			$model = $data;
 		}
+
 		// Array to model
 		elseif ( is_array($data) && count($data) )
 		{
 			$model = SpamGuardModel::populateModel($data);
 		}
+
 		// Post request to model
 		else
 		{
@@ -92,7 +94,7 @@ class SpamGuardService extends BaseApplicationComponent
 				{
 					// May return false if the key is invalid so check that too
 					if ( $this->provider->isKeyValid() )
-					{						
+					{
 						return true;
 					}
 					else

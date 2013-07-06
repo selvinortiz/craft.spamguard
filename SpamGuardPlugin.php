@@ -18,7 +18,7 @@ class SpamGuardPlugin extends BasePlugin
 {
 	const PLUGIN_NAME			= 'Spam Guard';
 	const PLUGIN_HANDLE			= 'spamGuard';
-	const PLUGIN_VERSION		= '0.4.1';
+	const PLUGIN_VERSION		= '0.4.2';
 	const PLUGIN_DEVELOPER		= 'Selvin Ortiz';
 	const PLUGIN_DEVELOPER_URL	= 'http://twitter.com/selvinortiz';
 	const PLUGIN_SETTINGS_TMPL	= 'spamguard/__settings.twig';
@@ -121,80 +121,40 @@ class SpamGuardPlugin extends BasePlugin
 	}
 
 	//--------------------------------------------------------------------------------
-	
-	public function hookRegisterCpRoutes()
-	{
-		return array();
-	}
-
-	//--------------------------------------------------------------------------------
 	// @HOOKS
 	//--------------------------------------------------------------------------------
 	
 	/**
-	 * spamGuardSubmittedContent()
+	 * spamGuardDetectSpam()
 	 *
-	 * Same behavior as spamGuardSubmittedContent() but differs in the way parameters are passed
-	 * This function is more verbose and it's signature may be easier to understand and utilize
+	 * This function name was chosen in favor of spamGuardSubmittedContent/spamGuardPostedContent
+	 * The signature was made more verbose and easier to understand
+	 * 
+	 * @since	0.4.2
+	 * @return	boolean		Whether spam was detected
 	 */
-	public function spamGuardSubmittedContent($content, $author, $email, $onSuccess=false, $onFailure=false)
-	{
-		$params = array();
 
-		$params['data'] = array(
+	public function spamGuardDetectSpam($content, $author, $email, $onSuccess=false, $onFailure=false)
+	{
+		$modelData = array(
 			'content'	=> $content,
 			'author'	=> $author,
 			'email'		=> $email
 		);
 
-		if ( $onSuccess && is_callable($onSuccess) )
+		$detected	= craft()->spamGuard->detectSpam($modelData);
+		$spamModel	= craft()->spamGuard->getModel();
+
+		if ( $detected && $onFailure && is_callable($onFailure) )
 		{
-			$params['onSuccess'] = $onSuccess;
+			$onFailure($spamModel);
 		}
 
-		if ( $onFailure && is_callable($onFailure) )
+		if ( $detected == false && $onSuccess && is_callable($onSuccess) )
 		{
-			$params['onFailure'] = $onFailure;
+			$onSuccess($spamModel);
 		}
 
-		return $this->spamGuardPostedContent($params);
-	}
-
-	/**
-	 * spamGuardPostedContent()
-	 *
-	 * @param  array $params The associative array of data and callbacks
-	 */
-	public function spamGuardPostedContent($params=false)
-	{
-		$data 		= array();
-		$onSuccess	= null;
-		$onFailure	= null;
-
-		if ( $params && is_array($params) )
-		{
-			@extract($params);
-		}
-
-		$isContentSpam = craft()->spamGuard->isSpam($data);
-
-		$modelInstance = craft()->spamGuard->getModel();
-
-		if ( $isContentSpam && $onFailure )
-		{
-			if (is_callable($onFailure))
-			{
-				$onFailure($modelInstance);
-			}
-		}
-		elseif ( ! $isContentSpam && $onSuccess )
-		{
-			if (is_callable($onSuccess))
-			{
-				$onSuccess($modelInstance);
-			}
-		}
-
-		return $isContentSpam;
+		return (bool) $detected;
 	}
 }

@@ -1,18 +1,28 @@
 ## Spam Guard *for* Craft
 *by* [Selvin Ortiz](http://twitter.com/selvinortiz)
 
-### Version 0.4.1
+### Version 0.4.2
 *Requirements*
 - PHP 5.3
 - Craft 1.0
 
 ### Description
-*Spam Guard* allows you to harness the power of [Akismet](http://akismet.com) to help you fight **spam**.
+*Spam Guard* allows you to harness the power of [Akismet](http://akismet.com) to help you fight **spam**
 
 ### Changelog
 *__Spam Guard__ may not be stable enough for production until version __0.5__ is released but you are more than welcome to begin `testing/integrating`.*
 
 ----
+#### 0.4.2
+- Adds `spamGuardDetectSpam()` to `SpamGuardPlugin` *LTS*
+- Adds `detectSpam` to the `SpamGuardService` *LTS*
+- Removes `spamGuardPostedContent()` from `SpamGuardPlugin`
+- Removes `spamGuardSubmittedContent()` from `SpamGuardPlugin`
+- Removes `isSpam` from `SpamGuardService`
+- Adds the migrations folder explicitly with `.gitkeep`
+
+*The breaking changes in this version ensure a better foundation on which to build on for __Spam Guard__
+and it also ensures that the functions have easy to understand names that hint at their behavior and return values.*
 
 #### 0.4.1
 - Fixes inaccurate fetching of setting values
@@ -22,6 +32,7 @@
 - Handles missing `API Key` more gracefully
 - Adds placeholder Controller/Actions to be implemented
 - Adds the Akismet model
+- Removes empty `hookRegisterCpRoutes()`
 
 #### 0.4
 - Adds the `migrations` folder due to some errors while self updating if not present
@@ -60,7 +71,7 @@ Initial preview release
 - Install the `spamguard` plugin via the control panel
 - Add your `API Key` and `Origin URL`
 
-*If you attempt to use **Spam Guard** without setting an `API Key` it will redirect you to the `settings` page so that you may add it.*
+*If you attempt to use __Spam Guard__ without setting an `API Key` it will redirect you to the `settings` page so that you may add it.*
 
 ### Usage/Example
 
@@ -118,18 +129,15 @@ Next, we need to do some *pre-processing* before handing things off to *Spam Gua
 
 	4. If the form contains the content, author, and email fields, check for spam
 
-		// The data array must contain the content, author, and email keys
-		// If your form has different names for this fields, you can cast/import them
 		$params = array(
-			'data'		=> craft()->request->getPost(),
+			'content'	=> craft()->request->getPost('content'),
+			'author'	=> craft()->request->getPost('author'),
+			'email'		=> craft()->request->getPost('email'),
 			'onSuccess'	=> $onSuccess,	// optional
 			'onFailure'	=> $onFailure	// optional
 		);
 
-		// spamGuardPostedContent() runs isSpam() behind the scenes
-		// The (boolean) response will match that of isSpam()
-
-		$response = craft()->plugins->call('spamGuardPostedContent', $params);
+		$response = craft()->plugins->call('spamGuardDetectSpam', $params);
 
 		if ( $response['SpamGuard'] )
 		{
