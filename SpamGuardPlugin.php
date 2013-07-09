@@ -27,15 +27,14 @@ class SpamGuardPlugin extends BasePlugin
 
 	public function __construct()
 	{
-		require_once __DIR__.'/rocket/Rocket.php';
-		Rocket::launch();
+		$this->loadPackage();
 	}
 
 	//--------------------------------------------------------------------------------
 	
 	public function getName()
 	{
-		return Rocket::getPluginName($this, self::PLUGIN_NAME);
+		return Bridge::getPluginName($this, self::PLUGIN_NAME);
 	}
 
 	//--------------------------------------------------------------------------------
@@ -101,7 +100,7 @@ class SpamGuardPlugin extends BasePlugin
 			return $settings;
 		}
 
-		return array_merge( $settings, array('pluginName'=>Rocket::getPluginName($this, self::PLUGIN_NAME) ) );
+		return array_merge( $settings, array('pluginName'=>Bridge::getPluginName($this, self::PLUGIN_NAME) ) );
 	}
 
 	//--------------------------------------------------------------------------------
@@ -109,7 +108,7 @@ class SpamGuardPlugin extends BasePlugin
 	public function onAfterInstall()
 	{
 		$dbCommand		= craft()->db->createCommand();
-		$pluginClass	= Rocket::getClassName($this);
+		$pluginClass	= Bridge::getClassName($this);
 		$pluginSettings	= array( 'pluginName'=>$this->getName(), 'pluginNickname'=>$this->getName() );
 
 		$dbCommand->update(
@@ -121,9 +120,27 @@ class SpamGuardPlugin extends BasePlugin
 	}
 
 	//--------------------------------------------------------------------------------
+	// @PACKAGE
+	//--------------------------------------------------------------------------------
+
+	protected function loadPackage()
+	{
+		$path = __DIR__.'/bridge/Loader.php';
+
+		if ( file_exists($path) )
+		{
+			require_once($path);
+		}
+		else
+		{
+			throw new \Exception('The plugin package was not found @'.__METHOD__);
+		}
+	}
+
+	//--------------------------------------------------------------------------------
 	// @HOOKS
 	//--------------------------------------------------------------------------------
-	
+
 	/**
 	 * spamGuardDetectSpam()
 	 *
@@ -133,7 +150,6 @@ class SpamGuardPlugin extends BasePlugin
 	 * @since	0.4.2
 	 * @return	boolean		Whether spam was detected
 	 */
-
 	public function spamGuardDetectSpam($content, $author, $email, $onSuccess=false, $onFailure=false)
 	{
 		$modelData = array(
@@ -157,4 +173,5 @@ class SpamGuardPlugin extends BasePlugin
 
 		return (bool) $detected;
 	}
+
 }

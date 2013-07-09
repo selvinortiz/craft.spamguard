@@ -3,6 +3,13 @@ namespace Craft;
 
 class SpamGuardVariable
 {
+	public function getName()
+	{
+		return craft()->plugins->getPlugin(SpamGuardPlugin::PLUGIN_HANDLE)->getName();
+	}
+
+	//--------------------------------------------------------------------------------
+
 	public function getVersion()
 	{
 		return craft()->plugins->getPlugin(SpamGuardPlugin::PLUGIN_HANDLE)->getVersion();
@@ -33,7 +40,7 @@ class SpamGuardVariable
 		}
 		else
 		{
-			// We may have gotten false but that happens when the model fails validation to (safety)
+			// We may have gotten false but that happens when the model fails validation too (safety)
 			if ( $spamModel->validate() )
 			{
 				return '<h2>Looks like you are free of spam, that is awesome!</h2>';

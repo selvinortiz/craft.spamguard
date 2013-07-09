@@ -6,9 +6,9 @@
 
 {% block content %}
 
-	<h2>ABOUT SPAM GUARD <b style="color: #d00;">{{ craft.spamguard.getVersion() }}</b></h2>
+	<h2 style="text-transform: uppercase;">ABOUT {{ craft.spamguard.getName() }} <b style="color: #d00;">{{ craft.spamguard.getVersion() }}</b></h2>
 	<p>
-		<em>Spam Guard</em> allows you to harness the power of
+		<em>{{ craft.spamguard.getName() }}</em> allows you to harness the power of
 		<a href="http://akismet.com">Akismet</a> to help you fight <strong>spam</strong>
 	</p>
 

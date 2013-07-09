@@ -4,9 +4,7 @@ namespace Craft;
 class SpamGuardController extends BaseController
 {
 	protected $allowAnonymous = true;
-	
-	//--------------------------------------------------------------------------------
-	// @TODO: Implement the following functions
+
 	//--------------------------------------------------------------------------------
 	
 	public function actionSpamGuardTest()
@@ -14,9 +12,9 @@ class SpamGuardController extends BaseController
 		// Force a POST request
 		$this->requirePostRequest();
 
-		// Get the plugin and the settings
-		$spamGuard	= craft()->plugins->getPlugin(SpamGuardPlugin::PLUGIN_HANDLE);
-		$settings	= $spamGuard->getSettings();
+		// Get the plugin and settings
+		$plugin		= craft()->plugins->getPlugin(SpamGuardPlugin::PLUGIN_HANDLE);
+		$settings	= $plugin->getSettings();
 
 		// Define accessory function
 		$feedback 	= function($type='error')

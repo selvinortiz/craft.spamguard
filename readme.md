@@ -13,6 +13,13 @@
 *__Spam Guard__ may not be stable enough for production until version __0.5__ is released but you are more than welcome to begin `testing/integrating`.*
 
 ----
+
+#### 0.4.3
+- Renames `rocket` to `bridge`
+- Makes the `bridge` helper library play nice with other plugins that may use it
+- Adds `safeOutput()` to mark template output as safe without having to use a raw filter from the template
+- Implements small fixes and improvements throughout
+
 #### 0.4.2
 - Adds `spamGuardDetectSpam()` to `SpamGuardPlugin` *LTS*
 - Adds `detectSpam` to the `SpamGuardService` *LTS*

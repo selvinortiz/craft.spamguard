@@ -1,6 +1,8 @@
 <?php
 namespace Craft;
 
+define('__FUNCTIONS', true);
+
 /**
  * toJson()
  * Utility to encode arrays into JSON using the Yii JSON parser
@@ -8,7 +10,6 @@ namespace Craft;
  * @param	array	$data	The associative array to encode
  * @return	string			The JSON encoded string
  */
-
 if ( ! function_exists('toJson') )
 {
 	function toJson( $data=array() )
@@ -26,7 +27,6 @@ if ( ! function_exists('toJson') )
  * @param	string	$str	The JSON string to decode
  * @return	string			The array/object decoded from the JSON string
  */
-
 if ( ! function_exists('getJson') )
 {
 	function getJson( $str, $asarray=false )
@@ -47,7 +47,6 @@ if ( ! function_exists('getJson') )
  *
  * @return	mix 	$def
  */
-
 if ( ! function_exists('arrayGet') )
 {
 	function arrayGet( $key, $arr=array(), $def=false )
@@ -67,7 +66,6 @@ if ( ! function_exists('arrayGet') )
  * dd()
  * Dump & Die
  */
-
 if ( ! function_exists('dd') )
 {
 	function dd($var, $die=true)
