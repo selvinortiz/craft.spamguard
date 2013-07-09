@@ -1,7 +1,7 @@
 ## Spam Guard *for* Craft
 *by* [Selvin Ortiz](http://twitter.com/selvinortiz)
 
-### Version 0.4.2
+### Version 0.4.3
 *Requirements*
 - PHP 5.3
 - Craft 1.0
