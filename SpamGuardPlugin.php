@@ -18,7 +18,7 @@ class SpamGuardPlugin extends BasePlugin
 {
 	const PLUGIN_NAME			= 'Spam Guard';
 	const PLUGIN_HANDLE			= 'spamGuard';
-	const PLUGIN_VERSION		= '0.4.3';
+	const PLUGIN_VERSION		= '0.4.4';
 	const PLUGIN_DEVELOPER		= 'Selvin Ortiz';
 	const PLUGIN_DEVELOPER_URL	= 'http://twitter.com/selvinortiz';
 	const PLUGIN_SETTINGS_TMPL	= 'spamguard/__settings.twig';
@@ -80,7 +80,13 @@ class SpamGuardPlugin extends BasePlugin
 			'pluginName'		=> array(AttributeType::String, 'maxLength'=>50),
 			'pluginNickname'	=> array(AttributeType::String, 'maxLength'=>50),
 			'akismetApiKey'		=> array(AttributeType::String, 'required'=>true, 'maxLength'=>25),
-			'akismetOriginUrl'	=> array(AttributeType::String, 'required'=>true, 'maxLength'=>255)
+			'akismetOriginUrl'	=> array(AttributeType::String, 'required'=>true, 'maxLength'=>255),
+			//...
+			'sendToName'		=> array(AttributeType::String, 'required'=>true, 'maxLength'=>50),
+			'sendToEmail'		=> array(AttributeType::Email,	'required'=>true, 'maxLength'=>100),
+			'subjectPrefix'		=> array(AttributeType::String, 'default'=>'Form Submission', 'maxLength'=>50),
+			//...
+			'emailTemplate'		=> array(AttributeType::String, 'required'=>true, 'default'=>'')
 		);
 	}
 

@@ -54,6 +54,57 @@
 
 	<hr>
 
+	<h3>FORM SETTINGS</h3>
+	{{
+		forms.textField({
+			id:				"subjectPrefix",
+			name:			"subjectPrefix",
+			label:			"Message Subject"|t,
+			instructions:	"The subject to prefix the posted subject with"|t,
+			value:			settings.subjectPrefix,
+			first:			false,
+			autofocus:		false,
+			errors:			""
+		})
+	}}
+	{{
+		forms.textField({
+			id:				"sendToName",
+			name:			"sendToName",
+			label:			"Rescipient Name"|t,
+			instructions:	"What is the name of the person that the message should be sent to?"|t,
+			value:			settings.sendToName,
+			first:			false,
+			autofocus:		false,
+			errors:			""
+		})
+	}}
+	{{
+		forms.textField({
+			id:				"sendToEmail",
+			name:			"sendToEmail",
+			label:			"Rescipient Email"|t,
+			instructions:	"What is the email of the person that the message should be sent to?"|t,
+			value:			settings.sendToEmail,
+			first:			false,
+			autofocus:		false,
+			errors:			""
+		})
+	}}
+	{{
+		forms.textareaField({
+			id:				"emailTemplate",
+			name:			"emailTemplate",
+			rows:			15,
+			label:			"Email Templates"|t,
+			instructions:	"Get crafty creating a nice email template which will have access to the <b>author, email, subject, and content</b>."|t,
+			value:			settings.emailTemplate,
+			first:			false,
+			autofocus:		false,
+			errors:			""
+		})
+	}}
+
 	<p>
 		&copy; {{ "now" | date("Y") }} {{ pluginName }} <em>by</em>
 		<a href="http://twitter.com/selvinortiz" title="@selvinortiz" target="_blank">Selvin Ortiz</a>

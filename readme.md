@@ -1,7 +1,7 @@
 ## Spam Guard *for* Craft
 *by* [Selvin Ortiz](http://twitter.com/selvinortiz)
 
-### Version 0.4.3
+### Version 0.4.4
 *Requirements*
 - PHP 5.3
 - Craft 1.0
@@ -13,6 +13,14 @@
 *__Spam Guard__ may not be stable enough for production until version __0.5__ is released but you are more than welcome to begin `testing/integrating`.*
 
 ----
+#### 0.4.4
+- Approaching stable
+- Removes `actionSpamGuardTest()`
+- Adds a message model
+- Adds a messaging service
+- Adds `actionSendMessage()` to enable contact form submissions
+- Allows you to create a `Spam Guard` enabled contact form with a custom template
+- Extends the plugins settings
 
 #### 0.4.3
 - Renames `rocket` to `bridge`
@@ -135,6 +143,10 @@ This function can be called from your own Controller but pay attention to its si
 
 
 ----
+#### `actionSendMessage()`
+`@spamguard/SpamGuardController.php`
+
+_This action allows you to submit the built in `contact form` that comes with `Spam Guard` which you can configure from the plugin settings_.
 
 ### Workflow Examples
 _Non yet but I plan on adding some as soon as I get a chance... in the meantime, if you need help with implementation just drop me a line!_
