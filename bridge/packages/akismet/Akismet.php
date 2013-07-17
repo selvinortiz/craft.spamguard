@@ -472,5 +472,3 @@ interface AkismetRequestFactory {
 
 	public function createRequestSender();
 }
-
-?>

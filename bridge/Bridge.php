@@ -17,7 +17,7 @@ class Bridge
 	/**
 	 * getPluginName()
 	 *
-	 * Grabs the plugin name or nickname if one has been set in via the CP
+	 * Grabs the plugin name or nickname if one has been set via the CP
 	 *
 	 * @param  object $pluginClass The plugin class instance
 	 * @param  string $defaultName The fallback name to use in case no pluginNickname is found
@@ -27,15 +27,17 @@ class Bridge
 	{
 		$className = self::getClassName($pluginClass);
 
-		if ( is_string($className) && ! empty($className) ) {
-			$cmd = 	craft()->db->createCommand()
-					->select('settings')
-					->from('plugins')
-					->where('class=:className', array(':className' => $className))
-					->queryScalar();
+		if ( is_string($className) && ! empty($className) )
+		{
+			$result =	craft()->db->createCommand()
+						->select('settings')
+						->from('plugins')
+						->where('class=:className', array(':className' => $className))
+						->queryScalar();
 
-			if ($cmd) {
-				$plugin = getJson( $cmd );
+			if ($result)
+			{
+				$plugin = getJson( $result );
 
 				return empty($plugin->pluginNickname) ? Craft::t($defaultName) : Craft::t($plugin->pluginNickname);
 			}
@@ -49,7 +51,7 @@ class Bridge
 	/**
 	 * getClassName()
 	 *
-	 * Translates the class instance into a class name w/o the namespace or plugin postfix
+	 * Translates the class instance into a class name w/o the namespace or plugin pre|postfix
 	 *
 	 * @param  object $pluginClass The plugin class instance
 	 * @return string The plugin class name
@@ -61,7 +63,8 @@ class Bridge
 		$className = str_replace(__NAMESPACE__.'\\', '', $className);
 		$className = str_replace('Plugin', '', $className);
 
-		if ( is_string($className) && ! empty( $className ) ) {
+		if ( is_string($className) && ! empty( $className ) )
+		{
 			return $className;
 		}
 

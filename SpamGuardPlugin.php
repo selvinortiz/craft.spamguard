@@ -77,16 +77,16 @@ class SpamGuardPlugin extends BasePlugin
 	public function defineSettings()
 	{
 		return array(
-			'pluginName'		=> array(AttributeType::String, 'maxLength'=>50),
-			'pluginNickname'	=> array(AttributeType::String, 'maxLength'=>50),
-			'akismetApiKey'		=> array(AttributeType::String, 'required'=>true, 'maxLength'=>25),
-			'akismetOriginUrl'	=> array(AttributeType::String, 'required'=>true, 'maxLength'=>255),
+			'pluginName'		=> array( AttributeType::String, 'maxLength'=>50 ),
+			'pluginNickname'	=> array( AttributeType::String, 'maxLength'=>50 ),
+			'akismetApiKey'		=> array( AttributeType::String, 'required'=>true, 'maxLength'=>25 ),
+			'akismetOriginUrl'	=> array( AttributeType::String, 'required'=>true, 'maxLength'=>255 ),
 			//...
-			'sendToName'		=> array(AttributeType::String, 'required'=>true, 'maxLength'=>50),
-			'sendToEmail'		=> array(AttributeType::Email,	'required'=>true, 'maxLength'=>100),
-			'subjectPrefix'		=> array(AttributeType::String, 'default'=>'Form Submission', 'maxLength'=>50),
+			'sendToName'		=> array( AttributeType::String, 'required'=>true, 'maxLength'=>50 ),
+			'sendToEmail'		=> array( AttributeType::Email,	'required'=>true, 'maxLength'=>100 ),
+			'subjectPrefix'		=> array( AttributeType::String, 'default'=>'Form Submission', 'maxLength'=>50 ),
 			//...
-			'emailTemplate'		=> array(AttributeType::String, 'required'=>true, 'default'=>'')
+			'emailTemplate'		=> array( AttributeType::String, 'required'=>true, 'default'=>'' )
 		);
 	}
 
@@ -121,7 +121,7 @@ class SpamGuardPlugin extends BasePlugin
 			'plugins', array('settings'=>toJson($pluginSettings)),
 			'class=:className', array(':className'=>$pluginClass)
 		);
-		
+
 		craft()->request->redirect( $this->getPluginCpUrl() );
 	}
 

@@ -111,3 +111,29 @@
 	</p>
 
 {% endblock %}
+
+{% set editorJs %}
+	window.onload = function() {
+		var editor = new Behave({
+			textarea: 		document.getElementById('emailTemplate'),
+			replaceTab: 	true,
+			softTabs: 		true,
+			tabSize: 		4,
+			autoOpen: 		true,
+			overwrite: 		true,
+			autoStrip: 		true,
+			autoIndent: 	true
+		});
+	};
+{% endset %}
+
+{% set editorCss %}
+	#emailTemplate {
+		color: #111;
+		font: normal 12px/20px monospace;
+	}
+ {% endset %}
+
+{% includeCss editorCss %}
+{% includeJs editorJs %}
+{% includeJsResource('spamguard/js/behave.js') %}

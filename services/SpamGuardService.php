@@ -13,8 +13,8 @@ class SpamGuardService extends BaseApplicationComponent
 	public function __construct()
 	{
 		// Get Settings
-		$spamGuard	= craft()->plugins->getPlugin(SpamGuardPlugin::PLUGIN_HANDLE);
-		$settings	= $spamGuard->getSettings();
+		$plugin		= craft()->plugins->getPlugin(SpamGuardPlugin::PLUGIN_HANDLE);
+		$settings	= $plugin->getSettings();
 		$originUrl	= $settings->akismetOriginUrl ?: craft()->request->getHostInfo();
 		$apiKey		= $settings->akismetApiKey;
 
@@ -32,21 +32,21 @@ class SpamGuardService extends BaseApplicationComponent
 
 			if ( ! count($akismetM->getErrors()) )
 			{
-				$this->handleMissingAkismetClass($spamGuard);
+				$this->handleMissingAkismetClass($plugin);
 			}
 
 			elseif ( $akismetM->getError('akismetApiKey') )
 			{
-				$this->handleMissingApiKey($spamGuard);
+				$this->handleMissingApiKey($plugin);
 			}
 
 			elseif ( $akismetM->getError('akismetOriginUrl') )
 			{
-				$this->handleMissingOriginUrl($spamGuard);
+				$this->handleMissingOriginUrl($plugin);
 			}
 			else
 			{
-				$this->handleSkyFalling($samGuard);
+				$this->handleSkyFalling($plugin);
 			}
 		}
 	}
@@ -112,18 +112,18 @@ class SpamGuardService extends BaseApplicationComponent
 	// @=HELPERS
 	//--------------------------------------------------------------------------------
 	
-	protected function handleInvalidKey($spamGuard)
+	protected function handleInvalidKey($plugin)
 	{
 		throw new \Exception('Your API Key may be invalid or may have expired');
 	}
 	
 	//--------------------------------------------------------------------------------
 
-	protected function handleMissingApiKey($spamGuard)
+	protected function handleMissingApiKey($plugin)
 	{
 		if ( craft()->userSession->isLoggedIn() )
 		{
-			craft()->request->redirect( $spamGuard->getPluginCpUrl() );
+			craft()->request->redirect( $plugin->getPluginCpUrl() );
 		}
 		else
 		{
@@ -138,7 +138,7 @@ class SpamGuardService extends BaseApplicationComponent
 	{
 		if ( craft()->userSession->isLoggedIn() )
 		{
-			craft()->request->redirect( $spamGuard->getPluginCpUrl() );
+			craft()->request->redirect( $plugin->getPluginCpUrl() );
 		}
 		else
 		{

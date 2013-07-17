@@ -29,7 +29,7 @@ class SpamGuardController extends BaseController
 		$spam 				= SpamGuardModel::populateModel($params);
 		$message			= SpamGuard_MessageModel::populateModel($params);
 
-		if ($message->validate())
+		if ( $message->validate() )
 		{
 			// Since we are not sending back to the form we can load the full subject into the $message
 			$message->subject = $this->getSubject($settings);
@@ -62,7 +62,7 @@ class SpamGuardController extends BaseController
 	}
 
 	//--------------------------------------------------------------------------------
-	// @HELPERS @actionSendMessage()
+	// @HELPERS > actionSendMessage()
 	//--------------------------------------------------------------------------------
 	
 	protected function getSubject(Model $settings)
