@@ -1,7 +1,7 @@
 ## Spam Guard *for* Craft
 *by* [Selvin Ortiz](http://twitter.com/selvinortiz)
 
-### Version 0.4.4
+### Version 0.4.5
 *Requirements*
 - PHP 5.3
 - Craft 1.0
@@ -11,6 +11,12 @@
 
 ### Changelog
 *__Spam Guard__ may not be stable enough for production until version __0.5__ is released but you are more than welcome to begin `testing/integrating`.*
+
+----
+#### 0.4.5
+- Cleans up spaces
+- Adds editor behavior to the `emailTemplate` textarea
+
 
 ----
 #### 0.4.4
