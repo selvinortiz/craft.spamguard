@@ -6,9 +6,9 @@
 
 {% block content %}
 
-	<h2 style="text-transform: uppercase;">ABOUT {{ craft.spamguard.getName() }} <b style="color: #d00;">{{ craft.spamguard.getVersion() }}</b></h2>
+	<h2 style="text-transform: uppercase;">ABOUT {{ craft.spamguard.name }} <b style="color: #d00;">{{ craft.spamguard.version }}</b></h2>
 	<p>
-		<em>{{ craft.spamguard.getName() }}</em> allows you to harness the power of
+		<em>{{ craft.spamguard.name }}</em> allows you to harness the power of
 		<a href="http://akismet.com">Akismet</a> to help you fight <strong>spam</strong>
 	</p>
 
@@ -97,7 +97,7 @@
 			name:			"emailTemplate",
 			rows:			15,
 			label:			"Email Templates"|t,
-			instructions:	"Get crafty creating a nice email template which will have access to the <b>author, email, subject, and content</b>."|t,
+			instructions:	"Get crafty creating a nice email template which will have access to the <b>author, email, subject,</b> and <b>content</b>."|t,
 			value:			settings.emailTemplate,
 			first:			false,
 			autofocus:		false,

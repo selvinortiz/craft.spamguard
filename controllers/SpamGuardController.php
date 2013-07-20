@@ -3,21 +3,23 @@ namespace Craft;
 
 class SpamGuardController extends BaseController
 {
+	protected $plugin;
 	protected $allowAnonymous = true;
 
 	//--------------------------------------------------------------------------------
-	
+
+	public function __construct()
+	{
+		$this->plugin	= craft()->plugins->getPlugin('spamGuard');
+	}
+
+	//--------------------------------------------------------------------------------
+
 	public function actionSendMessage()
 	{
-		// FORCE POST REQUEST
 		$this->requirePostRequest();
-
-		// Plugin & Settings
-		$plugin		= craft()->plugins->getPlugin(SpamGuardPlugin::PLUGIN_HANDLE);
-		$settings	= $plugin->getSettings();
-
-		// Message & Spam Models
-		$params 	= array(
+		$settings 			= $this->plugin->getSettings();
+		$params 			= array(
 			'subject'		=> craft()->request->getPost('subject'),
 			'content'		=> craft()->request->getPost('content'),
 			'author'		=> craft()->request->getPost('author'),
@@ -56,7 +58,7 @@ class SpamGuardController extends BaseController
 		}
 		else
 		{
-			$feedback = $this->getNotice('Please fill out the form properly so that we can send the message.', false);
+			$feedback = $this->getNotice('Spill the beans please!', false);
 			craft()->urlManager->setRouteVariables( array('feedback'=>$feedback, 'message'=>$message) );
 		}
 	}
@@ -64,7 +66,7 @@ class SpamGuardController extends BaseController
 	//--------------------------------------------------------------------------------
 	// @HELPERS > actionSendMessage()
 	//--------------------------------------------------------------------------------
-	
+
 	protected function getSubject(Model $settings)
 	{
 		$prefix		= trim($settings->subjectPrefix);
@@ -110,18 +112,18 @@ class SpamGuardController extends BaseController
 
 		Craft::log($msg, LogLevel::Error);
 	}
-	
+
 	//--------------------------------------------------------------------------------
-	
+
 	public function actionSubmitHam()
 	{
-		// ...
+		// @expect 1.0.0
 	}
 
 	//--------------------------------------------------------------------------------
-	
+
 	public function actionSubmitSpam()
 	{
-		// ...
+		// @expect 1.0.0
 	}
 }

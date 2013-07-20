@@ -3,11 +3,7 @@ namespace Craft;
 
 //--------------------------------------------------------------------------------
 
-$classMap = array(
-
-	'Akismet'	=> 'packages/akismet/Akismet.php'
-	// ...
-);
+$classMap = array( 'Akismet' => 'packages/akismet/Akismet.php');
 
 //--------------------------------------------------------------------------------
 

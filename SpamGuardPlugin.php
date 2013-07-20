@@ -6,7 +6,7 @@ namespace Craft;
  *
  * Spam Guard allows you to harness the powerful of Akismet to fight spam
  *
- * @author		Selvin Ortiz <http://twitter.com/selvinortiz>
+ * @author		Selvin Ortiz - http://twitter.com/selvinortiz
  * @package		SpamGuard
  * @category	Craft CMS
  * @copyright	2013 Selvin Ortiz
@@ -16,61 +16,42 @@ namespace Craft;
 
 class SpamGuardPlugin extends BasePlugin
 {
-	const PLUGIN_NAME			= 'Spam Guard';
-	const PLUGIN_HANDLE			= 'spamGuard';
-	const PLUGIN_VERSION		= '0.4.5';
-	const PLUGIN_DEVELOPER		= 'Selvin Ortiz';
-	const PLUGIN_DEVELOPER_URL	= 'http://twitter.com/selvinortiz';
-	const PLUGIN_SETTINGS_TMPL	= 'spamguard/__settings.twig';
+	public $props; // @var Plugin properties defined in plugin.json
 
 	//--------------------------------------------------------------------------------
 
 	public function __construct()
 	{
-		$this->loadPackage();
-	}
-
-	//--------------------------------------------------------------------------------
-	
-	public function getName()
-	{
-		return Bridge::getPluginName($this, self::PLUGIN_NAME);
-	}
-
-	//--------------------------------------------------------------------------------
-	
-	public function getVersion()
-	{
-		return self::PLUGIN_VERSION;
+		$this->loadBridge();
+		$this->loadProps();
 	}
 
 	//--------------------------------------------------------------------------------
 
-	public function getDeveloper()
-	{
-		return self::PLUGIN_DEVELOPER;
-	}
+	public function getName() { return Bridge::getPluginName($this, $this->props->name); }
 
 	//--------------------------------------------------------------------------------
 
-	public function getDeveloperUrl()
-	{
-		return self::PLUGIN_DEVELOPER_URL;
-	}
+	public function getVersion() { return $this->props->version; }
+
+	//--------------------------------------------------------------------------------
+
+	public function getDeveloper() { return $this->props->developer; }
+
+	//--------------------------------------------------------------------------------
+
+	public function getDeveloperUrl() { return $this->props->developerUrl; }
 
 	//--------------------------------------------------------------------------------
 
 	public function getPluginCpUrl()
 	{
-		return sprintf('/%s/%s', craft()->config->get('cpTrigger'), strtolower(self::PLUGIN_HANDLE) );
+		return sprintf('/%s/%s', craft()->config->get('cpTrigger'), strtolower($this->props->handle) );
 	}
 
 	//--------------------------------------------------------------------------------
 
-	public function hasCpSection()
-	{
-		return true;
-	}
+	public function hasCpSection() { return true; }
 
 	//--------------------------------------------------------------------------------
 
@@ -81,11 +62,11 @@ class SpamGuardPlugin extends BasePlugin
 			'pluginNickname'	=> array( AttributeType::String, 'maxLength'=>50 ),
 			'akismetApiKey'		=> array( AttributeType::String, 'required'=>true, 'maxLength'=>25 ),
 			'akismetOriginUrl'	=> array( AttributeType::String, 'required'=>true, 'maxLength'=>255 ),
-			//...
+			// --
 			'sendToName'		=> array( AttributeType::String, 'required'=>true, 'maxLength'=>50 ),
 			'sendToEmail'		=> array( AttributeType::Email,	'required'=>true, 'maxLength'=>100 ),
 			'subjectPrefix'		=> array( AttributeType::String, 'default'=>'Form Submission', 'maxLength'=>50 ),
-			//...
+			// --
 			'emailTemplate'		=> array( AttributeType::String, 'required'=>true, 'default'=>'' )
 		);
 	}
@@ -94,11 +75,14 @@ class SpamGuardPlugin extends BasePlugin
 
 	public function getSettingsHtml()
 	{
-		return craft()->templates->render(self::PLUGIN_SETTINGS_TMPL, array('settings'=>$this->getSettings()));
+		$tmpl = $this->props->settingsTemplate;
+		$data = array('settings'=>$this->getSettings());
+
+		return craft()->templates->render($tmpl, $data);
 	}
 
 	//--------------------------------------------------------------------------------
-	
+
 	public function prepSettings( $settings=array() )
 	{
 		if ( array_key_exists('pluginName', $settings) && ! empty($settings['pluginName']) )
@@ -106,16 +90,20 @@ class SpamGuardPlugin extends BasePlugin
 			return $settings;
 		}
 
-		return array_merge( $settings, array('pluginName'=>Bridge::getPluginName($this, self::PLUGIN_NAME) ) );
+		return array_merge( $settings, array('pluginName'=>Bridge::getPluginName($this, $this->props->name) ) );
 	}
 
 	//--------------------------------------------------------------------------------
-	
+
 	public function onAfterInstall()
 	{
 		$dbCommand		= craft()->db->createCommand();
 		$pluginClass	= Bridge::getClassName($this);
-		$pluginSettings	= array( 'pluginName'=>$this->getName(), 'pluginNickname'=>$this->getName() );
+		$pluginSettings	= array(
+			'pluginName'		=> $this->getName(),
+			'pluginNickname'	=> $this->getName(),
+			'emailTemplate'		=> IOHelper::getFile(__DIR__.'/templates/__message.twig')->getContents()
+		);
 
 		$dbCommand->update(
 			'plugins', array('settings'=>toJson($pluginSettings)),
@@ -126,10 +114,17 @@ class SpamGuardPlugin extends BasePlugin
 	}
 
 	//--------------------------------------------------------------------------------
-	// @PACKAGE
+	// @LOADERS
 	//--------------------------------------------------------------------------------
 
-	protected function loadPackage()
+	protected function loadProps()
+	{
+		$this->props = getJson(IOHelper::getFile(__DIR__.'/plugin.json')->getContents());
+	}
+
+	//--------------------------------------------------------------------------------
+
+	protected function loadBridge()
 	{
 		$path = __DIR__.'/bridge/Loader.php';
 
@@ -152,7 +147,7 @@ class SpamGuardPlugin extends BasePlugin
 	 *
 	 * This function name was chosen in favor of spamGuardSubmittedContent/spamGuardPostedContent
 	 * The signature was made more verbose and easier to understand
-	 * 
+	 *
 	 * @since	0.4.2
 	 * @return	boolean		Whether spam was detected
 	 */
@@ -179,5 +174,4 @@ class SpamGuardPlugin extends BasePlugin
 
 		return (bool) $detected;
 	}
-
 }

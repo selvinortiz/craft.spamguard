@@ -1,7 +1,7 @@
 ## Spam Guard *for* Craft
 *by* [Selvin Ortiz](http://twitter.com/selvinortiz)
 
-### Version 0.4.5
+### Version 0.4.6
 *Requirements*
 - PHP 5.3
 - Craft 1.0
@@ -13,10 +13,15 @@
 *__Spam Guard__ may not be stable enough for production until version __0.5__ is released but you are more than welcome to begin `testing/integrating`.*
 
 ----
+#### 0.4.6
+- Removes class constancts for plugin properties
+- Adds `plugin.json` to define the plugin metadata
+- Cleans up trailing spaces and enforces new line (EOF)
+
+----
 #### 0.4.5
 - Cleans up spaces
 - Adds editor behavior to the `emailTemplate` textarea
-
 
 ----
 #### 0.4.4
@@ -82,11 +87,11 @@ and it also ensures that the functions have easy to understand names that hint a
 
 #### 0.1
 Initial preview release
- 
+
  ----
 
 ### Installation
-- Clone `git@github.com:selvinortiz/spamguard.git` or [download](https://github.com/selvinortiz/spamguard/archive/master.zip) the *Spam Guard* repo 
+- Clone `git@github.com:selvinortiz/spamguard.git` or [download](https://github.com/selvinortiz/spamguard/archive/master.zip) the *Spam Guard* repo
 - Throw the contents inside your `craft/plugins/spamguard`
 - Make sure *Craft* has `read/write` permissions on `craft/plugins/spamguard`
 - Install the `spamguard` plugin via the control panel
