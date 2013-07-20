@@ -14,8 +14,8 @@
 
 ----
 #### 0.4.6
-- Removes class constancts for plugin properties
-- Adds `plugin.json` to define the plugin metadata
+- Removes class constants for plugin properties
+- Adds plugin.json` to define the plugin metadata
 - Cleans up trailing spaces and enforces new line (EOF)
 
 ----
