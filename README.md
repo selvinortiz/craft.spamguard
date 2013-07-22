@@ -133,25 +133,26 @@ they will be executed and the value of the spam detection method will be returne
 #### Example
 This function can be called from your own Controller but pay attention to its signature and the way _Craft_ calls methods on plugins.
 
-	$args = array(
-		'content'	=> 'I get so angry when the liquor cabinet is empty.',
-		'author'	=> 'Angry Brad',
-		'email'		=> 'angry@brad.com',
-		'onSuccess'	=> function() {},
-		'onFailure'	=> function() {}
-	);
+```php
+$args = array(
+	'content'	=> 'I get so angry when the liquor cabinet is empty.',
+	'author'	=> 'Angry Brad',
+	'email'		=> 'angry@brad.com',
+	'onSuccess'	=> function() {},
+	'onFailure'	=> function() {}
+);
 
-	$response = craft()->plugins->call('spamGuardDetectSpam', $args)
+$response = craft()->plugins->call('spamGuardDetectSpam', $args)
 
-	// The $response will be an array of plugin reponses matching the method name you called
-	// In our case, it might return something like this...
+// The $response will be an array of plugin reponses matching the method name you called
+// In our case, it might return something like this...
 
-	array(
-		'SpamGuard'	=> false
-	);
+array(
+	'SpamGuard'	=> false
+);
 
-	// It returns false probably because Brad might be an angry drunken fool but his content is solid;)
-
+// It returns false probably because Brad might be an angry drunken fool but his content is solid;)
+```
 
 ----
 #### `actionSendMessage()`
