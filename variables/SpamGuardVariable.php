@@ -5,42 +5,18 @@ class SpamGuardVariable
 {
 	protected $plugin;
 
-	//--------------------------------------------------------------------------------
-
 	public function __construct()
 	{
 		$this->plugin = craft()->plugins->getPlugin('spamGuard');
 	}
 
-	//--------------------------------------------------------------------------------
-	
-	public function getName()
+	public function getName($real=false)
 	{
-		return $this->plugin->getName();
+		return $this->plugin->getName($real);
 	}
-
-	//--------------------------------------------------------------------------------
 
 	public function getVersion()
 	{
 		return $this->plugin->getVersion();
-	}
-
-	//--------------------------------------------------------------------------------
-
-	public function getProp($name=null)
-	{
-		if ( is_null($name) )
-		{
-			return $this->plugin->props;
-		}
-		elseif ( property_exists($this->plugin->props, $name) )
-		{
-			return $this->plugin->props->$name;
-		}
-		else
-		{
-			return false;
-		}
 	}
 }

@@ -3,21 +3,18 @@ namespace Craft;
 
 class SpamGuardController extends BaseController
 {
-	protected $plugin;
-	protected $allowAnonymous = true;
-
-	//--------------------------------------------------------------------------------
+	protected $plugin			= null;
+	protected $allowAnonymous	= true;
 
 	public function __construct()
 	{
-		$this->plugin	= craft()->plugins->getPlugin('spamGuard');
+		$this->plugin = craft()->plugins->getPlugin('spamGuard');
 	}
-
-	//--------------------------------------------------------------------------------
 
 	public function actionSendMessage()
 	{
 		$this->requirePostRequest();
+
 		$settings 			= $this->plugin->getSettings();
 		$params 			= array(
 			'subject'		=> craft()->request->getPost('subject'),
@@ -31,36 +28,59 @@ class SpamGuardController extends BaseController
 		$spam 				= SpamGuardModel::populateModel($params);
 		$message			= SpamGuard_MessageModel::populateModel($params);
 
-		if ( $message->validate() )
+		if ($message->validate())
 		{
-			// Since we are not sending back to the form we can load the full subject into the $message
 			$message->subject = $this->getSubject($settings);
 
-			if ( $spam->validate() )
+			if ($spam->validate())
 			{
-				if ( craft()->spamGuard->detectSpam($spam) )
+				if (craft()->spamGuard->detectSpam($spam))
 				{
-					$this->logSpam($spam);
-					$this->redirect('http://spam.abuse.net/');
-				}
-
-				if ( craft()->spamGuard_messaging->sendMessage($message, $settings) )
-				{
-					$feedback = $this->getNotice('Yay, your message was sent successfully.', true);
-					craft()->urlManager->setRouteVariables( array('feedback'=>$feedback) );
+					$this->handleSpammySubmission();
 				}
 				else
 				{
-					$feedback = $this->getNotice('The server is acting up, we could not send the message: (', false);
-					craft()->urlManager->setRouteVariables( array('feedback'=>$feedback) );
+					if (craft()->spamGuard_message->sendMessage($message, $settings))
+					{
+						$this->handleSuccessfulSubmission();
+					}
+					else
+					{
+						$feedback = $this->getNotice('The server is acting up, we could not send the message: (', false);
+						craft()->urlManager->setRouteVariables( array('feedback'=>$feedback) );
+					}
 				}
 			}
 		}
 		else
 		{
-			$feedback = $this->getNotice('Spill the beans please!', false);
-			craft()->urlManager->setRouteVariables( array('feedback'=>$feedback, 'message'=>$message) );
+			craft()->urlManager->setRouteVariables(array('message'=>$message));
 		}
+	}
+
+	public function handleSuccessfulSubmission()
+	{
+		$successfulReturn = craft()->request->getPost('successfulReturn');
+
+		if ($successfulReturn)
+		{
+			$this->redirectTo($successfulReturn);
+		}
+
+		craft()->request->redirectToPostedUrl();
+	}
+
+	public function handleSpammySubmission()
+	{
+		$successfulReturn	= craft()->request->getPost('successfulReturn');
+		$unsuccessfulReturn	= craft()->request->getPost('unsuccessfulReturn');
+
+		if ($successfulReturn || $unsuccessfulReturn)
+		{
+			$this->redirectTo($unsuccessfulReturn ?: $successfulReturn);
+		}
+
+		craft()->request->redirectToPostedUrl();
 	}
 
 	//--------------------------------------------------------------------------------
@@ -90,11 +110,9 @@ class SpamGuardController extends BaseController
 		return false;
 	}
 
-	//--------------------------------------------------------------------------------
-
 	protected function getNotice($msg, $success=true)
 	{
-		if ( $success )
+		if ($success)
 		{
 			return array('message'=>trim($msg), 'type'=>'success');
 		}
@@ -104,23 +122,10 @@ class SpamGuardController extends BaseController
 		}
 	}
 
-	//--------------------------------------------------------------------------------
-
-	protected function logSpam(SpamGuardModel $spam)
-	{
-		$msg = sprintf("\n@SPAMGUARD (##) AUTHOR %s : EMAIL %s : SPAM \n%s \n(##)\n", $spam->author, $spam->email, $spam->content);
-
-		Craft::log($msg, LogLevel::Error);
-	}
-
-	//--------------------------------------------------------------------------------
-
 	public function actionSubmitHam()
 	{
 		// @expect 1.0.0
 	}
-
-	//--------------------------------------------------------------------------------
 
 	public function actionSubmitSpam()
 	{

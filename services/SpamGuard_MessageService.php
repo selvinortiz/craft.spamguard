@@ -45,7 +45,7 @@ class SpamGuard_MessagingService extends BaseApplicationComponent
 		}
 		else
 		{
-			return craft()->templates->render('spamguard/__message.twig', $vars);
+			return craft()->templates->render('spamguard/_message.html', $vars);
 		}
 	}
 }

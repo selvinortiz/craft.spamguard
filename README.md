@@ -1,7 +1,7 @@
 ## Spam Guard *for* Craft
 *by* [Selvin Ortiz](http://twitter.com/selvinortiz)
 
-### Version 0.4.6
+### Version 0.4.7
 *Requirements*
 - PHP 5.3
 - Craft 1.0
@@ -11,6 +11,17 @@
 
 ### Changelog
 *__Spam Guard__ may not be stable enough for production until version __0.5__ is released but you are more than welcome to begin `testing/integrating`.*
+
+----
+#### 0.4.7
+- Adds support for **Contact Form 1.3** by **P&T**
+- Removes the bridge package that was loading akismet
+- Removes the plugin.json file that was loading plugin properties
+- Renames license, templates (.html), and the messaging service
+- Updates codebase to make it as simple and clean as possible
+- Updates the settings UI with new icons and a new setting for **Contact Form 1.3**
+- Fixes fatal error caused by missing class constant in `SpamGuardService.php`
+- @TODO: Remove built in form functionality and prefer **Contact Form 1.3**
 
 ----
 #### 0.4.6

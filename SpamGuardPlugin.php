@@ -2,7 +2,7 @@
 namespace Craft;
 
 /**
- * @=SpamGuard
+ * Spam Guard 0.4.7
  *
  * Spam Guard allows you to harness the powerful of Akismet to fight spam
  *
@@ -16,162 +16,122 @@ namespace Craft;
 
 class SpamGuardPlugin extends BasePlugin
 {
-	public $props; // @var Plugin properties defined in plugin.json
-
-	//--------------------------------------------------------------------------------
-
 	public function __construct()
 	{
-		$this->loadBridge();
-		$this->loadProps();
+		Craft::import('plugins.spamguard.helpers.Akismet');
 	}
 
-	//--------------------------------------------------------------------------------
+	public function init()
+	{
+		if ($this->getSettings()->enableContactFormSupport)
+		{
+			craft()->on('contactForm.beforeSend', function(ContactFormEvent $event)
+			{
+				if (craft()->spamGuard->detectContactFormSpam($event->params['email']))
+				{
+					$event->fakeIt = true;
+				}
+			});
+		}
+	}
 
-	public function getName() { return Bridge::getPluginName($this, $this->props->name); }
+	public function getName($real=false)
+	{
+		$alias = Craft::t($this->getSettings()->pluginAlias);
 
-	//--------------------------------------------------------------------------------
+		if ($real)
+		{
+			return 'Spam Guard';
+		}
 
-	public function getVersion() { return $this->props->version; }
+		return empty($alias) ? 'Spam Guard' : $alias;
+	}
 
-	//--------------------------------------------------------------------------------
+	public function getVersion()
+	{
+		return '0.4.7';
+	}
 
-	public function getDeveloper() { return $this->props->developer; }
+	public function getDeveloper()
+	{
+		return 'Selvin Ortiz';
+	}
 
-	//--------------------------------------------------------------------------------
-
-	public function getDeveloperUrl() { return $this->props->developerUrl; }
-
-	//--------------------------------------------------------------------------------
+	public function getDeveloperUrl()
+	{
+		return 'http://twitter.com/selvinortiz';
+	}
 
 	public function getPluginCpUrl()
 	{
-		return sprintf('/%s/%s', craft()->config->get('cpTrigger'), strtolower($this->props->handle) );
+		return sprintf('/%s/spamguard', craft()->config->get('cpTrigger'));
 	}
 
-	//--------------------------------------------------------------------------------
-
-	public function hasCpSection() { return true; }
-
-	//--------------------------------------------------------------------------------
+	public function hasCpSection()
+	{
+		return $this->getSettings()->enableCpTab;
+	}
 
 	public function defineSettings()
 	{
 		return array(
-			'pluginName'		=> array( AttributeType::String, 'maxLength'=>50 ),
-			'pluginNickname'	=> array( AttributeType::String, 'maxLength'=>50 ),
-			'akismetApiKey'		=> array( AttributeType::String, 'required'=>true, 'maxLength'=>25 ),
-			'akismetOriginUrl'	=> array( AttributeType::String, 'required'=>true, 'maxLength'=>255 ),
-			// --
-			'sendToName'		=> array( AttributeType::String, 'required'=>true, 'maxLength'=>50 ),
-			'sendToEmail'		=> array( AttributeType::Email,	'required'=>true, 'maxLength'=>100 ),
-			'subjectPrefix'		=> array( AttributeType::String, 'default'=>'Form Submission', 'maxLength'=>50 ),
-			// --
-			'emailTemplate'		=> array( AttributeType::String, 'required'=>true, 'default'=>'' )
+			'akismetApiKey'		=> array(AttributeType::String, 'required'=>true, 'maxLength'=>25),
+			'akismetOriginUrl'	=> array(AttributeType::String, 'required'=>true, 'maxLength'=>255),
+
+			'sendToName'		=> array(AttributeType::String, 'required'=>true, 'maxLength'=>50),
+			'sendToEmail'		=> array(AttributeType::Email,	'required'=>true, 'maxLength'=>100),
+			'subjectPrefix'		=> array(AttributeType::String, 'default'=>'Form Submission', 'maxLength'=>50),
+			'emailTemplate'		=> array(AttributeType::String, 'required'=>true, 'default'=>''),
+
+			'enableCpTab'		=> AttributeType::Bool,
+			'pluginAlias'		=> AttributeType::String,
+
+			// Contact Form by P&T
+			'enableContactFormSupport'	=> AttributeType::Bool
 		);
 	}
-
-	//--------------------------------------------------------------------------------
 
 	public function getSettingsHtml()
 	{
-		$tmpl = $this->props->settingsTemplate;
-		$data = array('settings'=>$this->getSettings());
+		craft()->templates->includeCssResource('spamguard/css/spamguard.css');
 
-		return craft()->templates->render($tmpl, $data);
-	}
-
-	//--------------------------------------------------------------------------------
-
-	public function prepSettings( $settings=array() )
-	{
-		if ( array_key_exists('pluginName', $settings) && ! empty($settings['pluginName']) )
-		{
-			return $settings;
-		}
-
-		return array_merge( $settings, array('pluginName'=>Bridge::getPluginName($this, $this->props->name) ) );
-	}
-
-	//--------------------------------------------------------------------------------
-
-	public function onAfterInstall()
-	{
-		$dbCommand		= craft()->db->createCommand();
-		$pluginClass	= Bridge::getClassName($this);
-		$pluginSettings	= array(
-			'pluginName'		=> $this->getName(),
-			'pluginNickname'	=> $this->getName(),
-			'emailTemplate'		=> IOHelper::getFile(__DIR__.'/templates/__message.twig')->getContents()
+		return craft()->templates->render(
+			'spamguard/_settings.html',
+			array(
+				'settings'	=> $this->getSettings()
+			)
 		);
-
-		$dbCommand->update(
-			'plugins', array('settings'=>toJson($pluginSettings)),
-			'class=:className', array(':className'=>$pluginClass)
-		);
-
-		craft()->request->redirect( $this->getPluginCpUrl() );
 	}
-
-	//--------------------------------------------------------------------------------
-	// @LOADERS
-	//--------------------------------------------------------------------------------
-
-	protected function loadProps()
-	{
-		$this->props = getJson(IOHelper::getFile(__DIR__.'/plugin.json')->getContents());
-	}
-
-	//--------------------------------------------------------------------------------
-
-	protected function loadBridge()
-	{
-		$path = __DIR__.'/bridge/Loader.php';
-
-		if ( file_exists($path) )
-		{
-			require_once($path);
-		}
-		else
-		{
-			throw new \Exception('The plugin package was not found @'.__METHOD__);
-		}
-	}
-
-	//--------------------------------------------------------------------------------
-	// @HOOKS
-	//--------------------------------------------------------------------------------
 
 	/**
 	 * spamGuardDetectSpam()
 	 *
-	 * This function name was chosen in favor of spamGuardSubmittedContent/spamGuardPostedContent
-	 * The signature was made more verbose and easier to understand
+	 * Allows your own plugin to verify spammy content by using craft()->plugins->call()
 	 *
 	 * @since	0.4.2
 	 * @return	boolean		Whether spam was detected
 	 */
 	public function spamGuardDetectSpam($content, $author, $email, $onSuccess=false, $onFailure=false)
 	{
-		$modelData = array(
+		$data = array(
 			'content'	=> $content,
 			'author'	=> $author,
 			'email'		=> $email
 		);
 
-		$detected	= craft()->spamGuard->detectSpam($modelData);
-		$spamModel	= craft()->spamGuard->getModel();
+		$detected	= craft()->spamGuard->detectSpam($data);
+		$model		= craft()->spamGuard->getModel();
 
-		if ( $detected && $onFailure && is_callable($onFailure) )
+		if ($detected && $onFailure && is_callable($onFailure))
 		{
-			$onFailure($spamModel);
+			$onFailure($model);
 		}
 
-		if ( $detected == false && $onSuccess && is_callable($onSuccess) )
+		if (!$detected && $onSuccess && is_callable($onSuccess))
 		{
-			$onSuccess($spamModel);
+			$onSuccess($model);
 		}
 
-		return (bool) $detected;
+		return $detected;
 	}
 }
