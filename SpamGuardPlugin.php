@@ -2,32 +2,34 @@
 namespace Craft;
 
 /**
- * Spam Guard 0.4.7
+ * Spam Guard 0.4.8
  *
- * Spam Guard allows you to harness the powerful of Akismet to fight spam
+ * Spam Guard allows you to harness the power of Akismet to fight spam
  *
  * @author		Selvin Ortiz - http://twitter.com/selvinortiz
  * @package		SpamGuard
  * @category	Craft CMS
- * @copyright	2013 Selvin Ortiz
- * @license		https://github.com/selvinortiz/spamguard/blob/master/license.txt
- * @link		https://github.com/selvinortiz/spamguard
+ * @copyright	2014 Selvin Ortiz
+ * @license		https://github.com/selvinortiz/craft.spamguard/blob/master/license.txt
+ * @link		https://github.com/selvinortiz/craft.spamguard
  */
 
 class SpamGuardPlugin extends BasePlugin
 {
-	public function __construct()
-	{
-		Craft::import('plugins.spamguard.helpers.Akismet');
-	}
-
+	/**
+	 * Queues the Kismet class for future use and listens for form events
+	 */
 	public function init()
 	{
-		if ($this->getSettings()->enableContactFormSupport)
+		Craft::import('plugins.spamguard.library.Kismet');
+
+		if ($this->getSettings()->enableFormSupport)
 		{
 			craft()->on('contactForm.beforeSend', function(ContactFormEvent $event)
 			{
-				if (craft()->spamGuard->detectContactFormSpam($event->params['email']))
+				$spam = craft()->spamGuard->detectContactFormSpam($event->params['message']);
+
+				if ($spam)
 				{
 					$event->fakeIt = true;
 				}
@@ -35,21 +37,27 @@ class SpamGuardPlugin extends BasePlugin
 		}
 	}
 
+	/**
+	 * Gets the plugin name or alias given by end user
+	 *
+	 * @param	bool	$real	Whether the real name (not alias) should be returned
+	 * @return	string
+	 */
 	public function getName($real=false)
 	{
-		$alias = Craft::t($this->getSettings()->pluginAlias);
-
 		if ($real)
 		{
 			return 'Spam Guard';
 		}
+
+		$alias = Craft::t($this->getSettings()->pluginAlias);
 
 		return empty($alias) ? 'Spam Guard' : $alias;
 	}
 
 	public function getVersion()
 	{
-		return '0.4.7';
+		return '0.4.9';
 	}
 
 	public function getDeveloper()
@@ -62,11 +70,6 @@ class SpamGuardPlugin extends BasePlugin
 		return 'http://twitter.com/selvinortiz';
 	}
 
-	public function getPluginCpUrl()
-	{
-		return sprintf('/%s/spamguard', craft()->config->get('cpTrigger'));
-	}
-
 	public function hasCpSection()
 	{
 		return $this->getSettings()->enableCpTab;
@@ -77,17 +80,9 @@ class SpamGuardPlugin extends BasePlugin
 		return array(
 			'akismetApiKey'		=> array(AttributeType::String, 'required'=>true, 'maxLength'=>25),
 			'akismetOriginUrl'	=> array(AttributeType::String, 'required'=>true, 'maxLength'=>255),
-
-			'sendToName'		=> array(AttributeType::String, 'required'=>true, 'maxLength'=>50),
-			'sendToEmail'		=> array(AttributeType::Email,	'required'=>true, 'maxLength'=>100),
-			'subjectPrefix'		=> array(AttributeType::String, 'default'=>'Form Submission', 'maxLength'=>50),
-			'emailTemplate'		=> array(AttributeType::String, 'required'=>true, 'default'=>''),
-
+			'enableFormSupport'	=> AttributeType::Bool,
 			'enableCpTab'		=> AttributeType::Bool,
-			'pluginAlias'		=> AttributeType::String,
-
-			// Contact Form by P&T
-			'enableContactFormSupport'	=> AttributeType::Bool
+			'pluginAlias'		=> AttributeType::String
 		);
 	}
 
@@ -98,7 +93,7 @@ class SpamGuardPlugin extends BasePlugin
 		return craft()->templates->render(
 			'spamguard/_settings.html',
 			array(
-				'settings'	=> $this->getSettings()
+				'settings' => $this->getSettings()
 			)
 		);
 	}
@@ -108,30 +103,26 @@ class SpamGuardPlugin extends BasePlugin
 	 *
 	 * Allows your own plugin to verify spammy content by using craft()->plugins->call()
 	 *
-	 * @since	0.4.2
-	 * @return	boolean		Whether spam was detected
+	 * @since    0.4.2
+	 * @param	array	$data
+	 * @param	bool	$onSuccess
+	 * @param	bool	$onFailure
+	 * @return  bool	Whether spam was detected
 	 */
-	public function spamGuardDetectSpam($content, $author, $email, $onSuccess=false, $onFailure=false)
+	public function spamGuardDetectSpam(array $data, $onSuccess=false, $onFailure=false)
 	{
-		$data = array(
-			'content'	=> $content,
-			'author'	=> $author,
-			'email'		=> $email
-		);
+		$isSpam	= craft()->spamGuard->isSpam($data);
 
-		$detected	= craft()->spamGuard->detectSpam($data);
-		$model		= craft()->spamGuard->getModel();
-
-		if ($detected && $onFailure && is_callable($onFailure))
+		if ($isSpam && $onFailure && is_callable($onFailure))
 		{
-			$onFailure($model);
+			$onFailure($data);
 		}
 
-		if (!$detected && $onSuccess && is_callable($onSuccess))
+		if (!$isSpam && $onSuccess && is_callable($onSuccess))
 		{
-			$onSuccess($model);
+			$onSuccess($data);
 		}
 
-		return $detected;
+		return $isSpam;
 	}
 }

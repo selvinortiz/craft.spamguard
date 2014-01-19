@@ -1,8 +1,13 @@
 <?php
 namespace Craft;
 
-class SpamGuardModel extends BaseModel
+class SpamGuardRecord extends BaseRecord
 {
+	public function getTableName()
+	{
+		return 'spamguard';
+	}
+
 	public function defineAttributes()
 	{
 		return array(
@@ -14,6 +19,13 @@ class SpamGuardModel extends BaseModel
 			'isSpam'		=> AttributeType::Bool,
 			'isHam'			=> AttributeType::Bool,
 			'data'			=> AttributeType::Mixed
+		);
+	}
+
+	public function defineIndexes()
+	{
+		return array(
+			array('columns' => array('email'))
 		);
 	}
 }

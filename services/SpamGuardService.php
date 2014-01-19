@@ -1,95 +1,54 @@
 <?php
 namespace Craft;
 
+use \selvinortiz\spamguard\Kismet;
+
 class SpamGuardService extends BaseApplicationComponent
 {
-	protected $model;		// SpamGuardModel instance
-	protected $provider;	// Akismet instance
+	protected $spamguard;
 
-	public function __construct(BaseModel $settings)
+	public function loadSpamGuard()
 	{
-		$plugin			= craft()->plugins->getPlugin('spamGuard');
-		$settings		= $plugin->getSettings();
-		$apiKey			= $settings->akismetApiKey;
-		$originUrl		= $settings->akismetOriginUrl ?: craft()->request->getHostInfo();
-		$params			= array('akismetApiKey' => $apiKey, 'akismetOriginUrl' => $originUrl);
-		$akismet		= SpamGuard_AkismetModel::populateModel($params);
-
-		if ($akismet->validate() && class_exists('Akismet'))
+		if (is_null($this->spamguard))
 		{
-			$this->provider = new \Akismet($akismet->akismetOriginUrl, $akismet->akismetApiKey);
-		}
-		else
-		{
-			$this->provider = false;
+			$plugin	= craft()->plugins->getPlugin('spamguard');
+			$params	= array(
+				'apiKey'	=> $plugin->getSettings()->akismetApiKey,
+				'originUrl'	=> $plugin->getSettings()->akismetOriginUrl
+			);
 
-			if (!count($akismet->getErrors()))
-			{
-				$this->handleMissingAkismetClass($plugin);
-			}
-			elseif ( $akismet->getError('akismetApiKey') )
-			{
-				$this->handleMissingApiKey($plugin);
-			}
-			elseif ( $akismet->getError('akismetOriginUrl') )
-			{
-				$this->handleMissingOriginUrl($plugin);
-			}
-			else
-			{
-				$this->handleSkyFalling($plugin);
-			}
+			$this->spamguard = new Kismet($params);
 		}
+
+		return $this->spamguard;
 	}
 
-	public function detectSpam($data=false)
+	/**
+	 * isSpam()
+	 * $data may contain email, author, and content keys.
+	 * 
+	 * @param  array   $data
+	 * @return boolean
+	 */
+	public function isSpam(array $data=array())
 	{
-		if (is_object($data) && ($data instanceof SpamGuardModel))
-		{
-			$model = $data;
-		}
-		elseif (is_array($data) && count($data))
-		{
-			$model = SpamGuardModel::populateModel($data);
-		}
-		else
-		{
-			$model = new SpamGuardModel();
+		$spamguard		= $this->loadSpamGuard();
+		$isKeyValid		= $spamguard->isKeyValid();
+		$flaggedAsSpam	= true;
 
-			$model->content	= craft()->request->getPost('content');
-			$model->author	= craft()->request->getPost('author');
-			$model->email	= craft()->request->getPost('email');
+		if ($isKeyValid)
+		{
+			$flaggedAsSpam = $spamguard->isSpam($data);
 		}
 
-		// Bind the model
-		$this->setModel($model);
+		$params = array_merge($data, array(
+			'isKeyValid'	=> $isKeyValid,
+			'flaggedAsSpam'	=> $flaggedAsSpam
+		));
 
-		if ($model->validate())
-		{
-			if (is_object($this->provider))
-			{
-				$this->provider->setCommentContent($model->content);
-				$this->provider->setCommentAuthor($model->author);
-				$this->provider->setCommentAuthorEmail($model->email);
-				$this->provider->setCommentUserAgent($_SERVER['HTTP_USER_AGENT']);
-				$this->provider->setUserIp($_SERVER['REMOTE_ADDR']);
+		$this->addLog($params);
 
-				if ($this->provider->isCommentSpam())
-				{
-					// May return false if the key is invalid so check that too
-					if ( $this->provider->isKeyValid() )
-					{
-						return true;
-					}
-					else
-					{
-						$this->handleInvalidKey($spamGuard);
-					}
-				}
-			}
-		}
-
-		return false;
+		return (bool) $flaggedAsSpam;
 	}
 
 	/**
@@ -98,70 +57,59 @@ class SpamGuardService extends BaseApplicationComponent
 	 * Allows you to use spamguard alongside the contactform plugin by P&T
 	 *
 	 * @since	0.4.7
+	 * @param	BaseModel $form
 	 * @return	boolean
 	 */
-	public function detectContactFormSpam(BaseModel $email)
+	public function detectContactFormSpam(BaseModel $form)
 	{
 		$data = array(
-			'content'	=> $email->message,
-			'author'	=> $email->fromName,
-			'email'		=> $email->fromEmail
+			'content'	=> $form->message,
+			'author'	=> $form->fromName,
+			'email'		=> $form->fromEmail
 		);
 
-		return (bool) $this->detectSpam($data);
+		return $this->isSpam($data);
 	}
 
-	//--------------------------------------------------------------------------------
-	// @=HELPERS
-	//--------------------------------------------------------------------------------
-
-	protected function handleInvalidKey($plugin)
+	protected function addLog($data)
 	{
-		throw new \Exception('Your API Key may be invalid or may have expired');
-	}
+		$record					= new SpamGuardRecord();
+		$record->email			= $this->fetch('email', $data);
+		$record->author			= $this->fetch('author', $data);
+		$record->content		= $this->fetch('content', $data);
+		$record->isKeyValid		= $this->fetch('isKeyValid', $data, null);
+		$record->flaggedAsSpam	= $this->fetch('flaggedAsSpam', $data, true);
+		$record->isSpam			= $this->fetch('isSpam', $data, null);
+		$record->isHam			= $this->fetch('isHam', $data, null);
+		$record->data			= $this->fetch('data', $data, array());
 
-	protected function handleMissingApiKey($plugin)
-	{
-		if ( craft()->userSession->isLoggedIn() )
+		if ($record->validate())
 		{
-			craft()->request->redirect( $plugin->getPluginCpUrl() );
-		}
-		else
-		{
-			Craft::log('Spam Guard: You attempted to use Spam Guard without an API Key', LogLevel::Warning);
+			$record->save();
 		}
 
+		return false;
 	}
 
-	protected function handleMissingOriginUrl()
+	public function getLogs(array $attributes=array())
 	{
-		if ( craft()->userSession->isLoggedIn() )
+		$models		= array();
+		$records	= SpamGuardRecord::model()->findAllByAttributes($attributes);
+
+		if ($records)
 		{
-			craft()->request->redirect( $plugin->getPluginCpUrl() );
+			foreach ($records as $record)
+			{
+				$models[] = SpamGuardModel::populateModel($record->getAttributes());
+			}
 		}
-		else
-		{
-			Craft::log('Spam Guard: You attempted to use Spam Guard without setting up the origin URL', LogLevel::Warning);
-		}
+
+		return $models;
 	}
 
-	protected function handleMissingAkismetClass()
+	public function fetch($key, array $arr=array(), $def=false)
 	{
-		throw new \Exception('The Akismet was not loaded properly.');
-	}
-
-	protected function handleSkyFalling()
-	{
-		throw new \Exception('We were unable to process your request.');
-	}
-
-	protected function setModel(SpamGuardModel $model)
-	{
-		$this->model =& $model;
-	}
-
-	public function getModel()
-	{
-		return $this->model instanceof SpamGuardModel ? $this->model : false;
+		return array_key_exists($key, $arr) ? $arr[$key] : $def;
 	}
 }
+

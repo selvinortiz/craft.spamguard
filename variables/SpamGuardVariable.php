@@ -19,4 +19,9 @@ class SpamGuardVariable
 	{
 		return $this->plugin->getVersion();
 	}
+
+	public function getLogs(array $attributes=array())
+	{
+		return craft()->spamGuard->getLogs($attributes);
+	}
 }

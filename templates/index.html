@@ -1,2 +1,31 @@
-{# Plugin Settings Redirect #}
-{% redirect("settings/plugins/spamguard") %}
+{% extends "_layouts/cp" %}
+
+{% set title = craft.spamguard.getName(true) %}
+
+{% set extraPageHeaderHtml %}
+	<a class="btn settings icon" href="{{ url('settings/plugins/spamguard') }}" title="{{ 'Settings'|t }}"></a>
+{% endset %}
+
+{% set content %}
+
+<table class="data specGrid">
+	<tr>
+		<th>#</th>
+		<th>Email</th>
+		<th>Author</th>
+		<th colspan="2">Content</th>
+		<th>Spam?</th>
+		<th>&nbsp;</th>
+	</tr>
+	{% for log in craft.spamguard.getLogs() %}
+	<tr>
+		<td>{{ loop.index }}</td>
+		<td>{{ log.email }}</td>
+		<td>{{ log.author }}</td>
+		<td colspan="2">{{ log.content }}</td>
+		<td>{{ log.flaggedAsSpam ? log.isKeyValid ? "Yes" : "Yes*" : "No" }}</td>
+		<td><a class="btn submit icon delete" href="{{ actionUrl('spamGuard/deleteLog') }}">Delete</a></td>
+	</tr>
+	{% endfor %}
+</table>
+{% endset %}

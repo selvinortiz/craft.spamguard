@@ -1,9 +1,8 @@
 {% import "_includes/forms" as forms %}
 
-{% set sg		= craft.spamguard %}
-{% set name		= sg.getName(true) %}
-{% set alias	= sg.getName() %}
-{% set version	= sg.getVersion() %}
+{% set name		= craft.spamguard.getName(true) %}
+{% set alias	= craft.spamguard.getName() %}
+{% set version	= craft.spamguard.getVersion() %}
 {% set origin	= settings.akismetOriginUrl|length ? settings.akismetOriginUrl : siteUrl %}
 
 {% block content %}
@@ -52,60 +51,11 @@
 			</p>
 			{{
 				forms.lightswitch({
-					name:		"enableContactFormSupport",
-					on:			settings.enableContactFormSupport
+					name:		"enableFormSupport",
+					on:			settings.enableFormSupport
 				})
 			}}
 
-			{{
-				forms.textField({
-					id:				"subjectPrefix",
-					name:			"subjectPrefix",
-					label:			"Message Subject"|t,
-					instructions:	"The subject to prefix the posted subject with"|t,
-					value:			settings.subjectPrefix,
-					first:			false,
-					autofocus:		false,
-					errors:			""
-				})
-			}}
-			{{
-				forms.textField({
-					id:				"sendToName",
-					name:			"sendToName",
-					label:			"Rescipient Name"|t,
-					instructions:	"What is the name of the person that the message should be sent to?"|t,
-					value:			settings.sendToName,
-					first:			false,
-					autofocus:		false,
-					errors:			""
-				})
-			}}
-			{{
-				forms.textField({
-					id:				"sendToEmail",
-					name:			"sendToEmail",
-					label:			"Rescipient Email"|t,
-					instructions:	"What is the email of the person that the message should be sent to?"|t,
-					value:			settings.sendToEmail,
-					first:			false,
-					autofocus:		false,
-					errors:			""
-				})
-			}}
-			{{
-				forms.textareaField({
-					id:				"emailTemplate",
-					name:			"emailTemplate",
-					rows:			15,
-					label:			"Email Template"|t,
-					instructions:	"Get crafty creating a nice email template which will have access to the <b>author, email, subject,</b> and <b>content</b>."|t,
-					value:			settings.emailTemplate,
-					first:			false,
-					autofocus:		false,
-					errors:			""
-				})
-			}}
 		</div>
 
 		<div class="spamGuardSection">
@@ -140,29 +90,3 @@
 	</div>
 
 {% endblock %}
-
-{% set editorJs %}
-	window.onload = function() {
-		var editor = new Behave({
-			textarea: 		document.getElementById('emailTemplate'),
-			replaceTab: 	true,
-			softTabs: 		true,
-			tabSize: 		4,
-			autoOpen: 		true,
-			overwrite: 		true,
-			autoStrip: 		true,
-			autoIndent: 	true
-		});
-	};
-{% endset %}
-
-{% set editorCss %}
-	#emailTemplate {
-		color: #111;
-		font: normal 12px/20px monospace;
-	}
-{% endset %}
-
-{% includeCss editorCss %}
-{% includeJs editorJs %}
-{% includeJsResource('spamguard/js/behave.js') %}
