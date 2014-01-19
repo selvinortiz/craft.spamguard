@@ -1,8 +1,0 @@
-## Misc
-*.DS_Store
-
-## Project
-*.tmproj
-*.sublime-workspace
-*.sublime-project
-*.idea
