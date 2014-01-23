@@ -2,7 +2,7 @@
 namespace Craft;
 
 /**
- * Spam Guard 0.4.8
+ * Spam Guard 0.5.0
  *
  * Spam Guard allows you to harness the power of Akismet to fight spam
  *
@@ -17,12 +17,10 @@ namespace Craft;
 class SpamGuardPlugin extends BasePlugin
 {
 	/**
-	 * Queues the Kismet class for future use and listens for form events
+	 * Listens for form events
 	 */
 	public function init()
 	{
-		Craft::import('plugins.spamguard.library.Kismet');
-
 		if ($this->getSettings()->enableFormSupport)
 		{
 			craft()->on('contactForm.beforeSend', function(ContactFormEvent $event)
@@ -40,7 +38,7 @@ class SpamGuardPlugin extends BasePlugin
 	/**
 	 * Gets the plugin name or alias given by end user
 	 *
-	 * @param	bool	$real	Whether the real name (not alias) should be returned
+	 * @param	bool	$real	Whether the real name should be returned
 	 * @return	string
 	 */
 	public function getName($real=false)
@@ -50,14 +48,14 @@ class SpamGuardPlugin extends BasePlugin
 			return 'Spam Guard';
 		}
 
-		$alias = Craft::t($this->getSettings()->pluginAlias);
+		$alias = $this->getSettings()->pluginAlias;
 
-		return empty($alias) ? 'Spam Guard' : $alias;
+		return empty($alias) ? 'Spam Guard' : Craft::t($alias);
 	}
 
 	public function getVersion()
 	{
-		return '0.4.9';
+		return '0.5.0';
 	}
 
 	public function getDeveloper()
@@ -104,7 +102,7 @@ class SpamGuardPlugin extends BasePlugin
 	 * Allows your own plugin to verify spammy content by using craft()->plugins->call()
 	 *
 	 * @since    0.4.2
-	 * @param	array	$data
+	 * @param	array	$data email, author, content
 	 * @param	bool	$onSuccess
 	 * @param	bool	$onFailure
 	 * @return  bool	Whether spam was detected

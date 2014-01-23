@@ -35,7 +35,7 @@ class SpamGuardTest extends BaseTest
 		$this->loadServices();
 	}
 
-	public function testFetch()
+	public function testServiceFetch()
 	{
 		$data = array('white'=>'fff', 'black'=>'000');
 

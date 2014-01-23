@@ -6,26 +6,48 @@
 	<a class="btn settings icon" href="{{ url('settings/plugins/spamguard') }}" title="{{ 'Settings'|t }}"></a>
 {% endset %}
 
-{% set content %}
+{% set logs = craft.spamguard.getLogs %}
 
-<table class="data specGrid">
-	<tr>
-		<th>#</th>
-		<th>Email</th>
-		<th>Author</th>
-		<th colspan="2">Content</th>
-		<th>Spam?</th>
-		<th>&nbsp;</th>
-	</tr>
-	{% for log in craft.spamguard.getLogs() %}
-	<tr>
-		<td>{{ loop.index }}</td>
-		<td>{{ log.email }}</td>
-		<td>{{ log.author }}</td>
-		<td colspan="2">{{ log.content }}</td>
-		<td>{{ log.flaggedAsSpam ? log.isKeyValid ? "Yes" : "Yes*" : "No" }}</td>
-		<td><a class="btn submit icon delete" href="{{ actionUrl('spamGuard/deleteLog') }}">Delete</a></td>
-	</tr>
-	{% endfor %}
-</table>
+{% set content %}
+	<table class="data specGrid">
+		<tr>
+			<th>#</th>
+			<th>Email</th>
+			<th>Author</th>
+			<th colspan="2">Content</th>
+			<th>Spam?</th>
+			<th>Actions</th>
+		</tr>
+		{% for log in logs %}
+		<tr>
+			<td>{{ loop.index }}</td>
+			<td>{{ log.email }}</td>
+			<td>{{ log.author }}</td>
+			<td colspan="2" class="typewriter">{{ log.content|nl2br }}</td>
+			<td>{{ log.flaggedAsSpam ? log.isKeyValid ? "Yes" : "Yes*" : "No" }}</td>
+			<td>
+				<form action="" method="POST">
+					<input type="hidden" name="action" value="spamGuard/deleteLog"/>
+					<input type="hidden" name="id" value="{{ log.id }}"/>
+					<button type="submit" class="btn submit icon delete">Delete</button>
+				</form>
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+
+	{% if logs|length > 1 %}
+		<div class="actionSet">
+			<div>
+				<form action="" method="POST">
+					<input type="hidden" name="action" value="spamGuard/deleteLogs"/>
+					<input type="hidden" name="confirmation" value=""/>
+					<button type="submit" class="btn submit icon delete">Trash Everything</button>
+					<input type="checkbox" name="confirmation" value="1"/> <strong>Yeah, do it!</strong>
+				</form>
+			</div>
+		</div>
+	{% endif %}
 {% endset %}
+
+{% includeCssFile('resources/spamguard/css/spamguard.css') %}

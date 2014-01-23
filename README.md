@@ -1,18 +1,56 @@
-## Spam Guard *for* Craft
+## Spam Guard 0.5.0
 *by* [Selvin Ortiz](http://twitter.com/selvinortiz)
-
-### Version 0.4.7
-*Requirements*
-- PHP 5.3
-- Craft 1.0
-
+ ----
 ### Description
-*Spam Guard* allows you to harness the power of [Akismet](http://akismet.com) to help you fight **spam**
+Spam Guard allows you to harness the power of Akismet to fight spam
 
-### Changelog
-*__Spam Guard__ may not be stable enough for production until version __0.5__ is released but you are more than welcome to begin `testing/integrating`.*
+### Features
+* The most effective way to fight spam in **Craft**
+* Lightweight Akismet API client built on **Guzzle**
+* Basic submission logging to avoid loosing incorrectly flagged emails
+* Native support for the [Contact From](https://github.com/pixelandtonic/ContactForm) plugin.
+
+### Minimum Requirements
+- Craft 1.3 build 2415
+- [Contact Form 1.3](https://github.com/pixelandtonic/ContactForm) by [P & T](http://pixelandtonic.com)
+
+### Installation
+1. Download the [latest release](https://github.com/selvinortiz/craft.spamguard/releases) with the following name pattern `spamguard.v*.*.*.zip`
+2. Extract the archive and place `spamguard` inside your `craft/plugins` directory
+3. Adjust file permissions as necessary
+4. Install **Spam Guard** from the **Control Panel**
+5. Set up your **Akismet/WordPress API Key** (get one from [akismet.com](http://akismet.com))
+6. Enable _contact form support_ from the plugin settings screen
 
 ----
+
+### Usage
+If you'd like to use **Spam Guard** alongside **Contact Form**, all you have to do is...
+
+1. Set up your form as outlined in the [Contact Form](https://github.com/pixelandtonic/ContactForm) examples.
+2. Make sure you follow the installation instructions for **Spam Guard**
+3. You should be good to go, easy hu?!
+
+### Notes
+Spam Guard will log every submission and let you see them in the the control panel.
+This will evolve over time but for now, it's there if you need to make sure you're not getting incorrect flags.
+
+### Feedback & Support
+If you have any feedback or questions please reach out to me on twitter [@selvinortiz](http://twitter.com/selvinortiz)
+
+### Changelog
+
+----
+#### 0.5.0 (Production Preview)
+
+- Adds native support for `contactform` by P&T
+- Adds a brand new `akismet` client built on **Guzzle** written by **Selvin Ortiz**
+- Adds a basic `unit test suite` skeleton
+- Adds a build script to aid in distribution
+- Adds basic submission logging
+- Removes all proprietary form functionality
+- Simplifies codebase
+
 #### 0.4.7
 - Adds support for **Contact Form 1.3** by **P&T**
 - Removes the bridge package that was loading akismet
@@ -44,12 +82,14 @@
 - Allows you to create a `Spam Guard` enabled contact form with a custom template
 - Extends the plugins settings
 
+----
 #### 0.4.3
 - Renames `rocket` to `bridge`
 - Makes the `bridge` helper library play nice with other plugins that may use it
 - Adds `safeOutput()` to mark template output as safe without having to use a raw filter from the template
 - Implements small fixes and improvements throughout
 
+----
 #### 0.4.2
 - Adds `spamGuardDetectSpam()` to `SpamGuardPlugin` *LTS*
 - Adds `detectSpam` to the `SpamGuardService` *LTS*
@@ -61,6 +101,7 @@
 *The breaking changes in this version ensure a better foundation on which to build on for __Spam Guard__
 and it also ensures that the functions have easy to understand names that hint at their behavior and return values.*
 
+----
 #### 0.4.1
 - Fixes inaccurate fetching of setting values
 - Corrects a `plugins call` example in the readme
@@ -71,6 +112,7 @@ and it also ensures that the functions have easy to understand names that hint a
 - Adds the Akismet model
 - Removes empty `hookRegisterCpRoutes()`
 
+----
 #### 0.4
 - Adds the `migrations` folder due to some errors while self updating if not present
 - Removes `composer.json` and the composer `vendor` package
@@ -80,12 +122,14 @@ and it also ensures that the functions have easy to understand names that hint a
 - Redirects you to the `settings` page for __Spam Guard__ if no `API Key` has been set
 - Updates the readme examples
 
+----
 #### 0.3
 - Adds the `spamGuardPostedContent()` action
 - Implements callback execution based on `spamGuardPostedContent()` results
 - Delegates most of the complex logic to the `SpamGuardService`
 - Cleans up the controller and only exposes a submit action `actionIsSpam()`
 
+----
 #### 0.2
 - Renames the `service` class
 - Extends a new Akismet Class
@@ -95,94 +139,9 @@ and it also ensures that the functions have easy to understand names that hint a
 - Loads Akismet via `Rocket::loadClass()`
 - Cleans up whitespace and tabs
 
-
+----
 #### 0.1
 Initial preview release
-
- ----
-
-### Installation
-- Clone `git@github.com:selvinortiz/spamguard.git` or [download](https://github.com/selvinortiz/spamguard/archive/master.zip) the *Spam Guard* repo
-- Throw the contents inside your `craft/plugins/spamguard`
-- Make sure *Craft* has `read/write` permissions on `craft/plugins/spamguard`
-- Install the `spamguard` plugin via the control panel
-- Add your `API Key` and `Origin URL`
-
-*If you attempt to use __Spam Guard__ without setting an `API Key` it will redirect you to the `settings` page so that you may add it.*
-
-----
-
-### Spam Guard API
-
-#### `spamGuardDetectSpam(content, author, email, [onSuccess], [onFailure])`
-`@spamguard/SpamGuardPlugin.php`
-
-----
-
-##### `$content` _required_
-
-The content to check for spam... this could be a post comment, message from a contact form or similar content.
-
-##### `$author` _required_
-The name of the author of the content you are checking for spam
-
-##### `$email` _required_
-The email address of the author of the content you are checking for spam
-
-##### `$onSuccess`
-The `callback` function that gets called when spam is **not** detected...
-this function will have access to the `SpamGuardModel` instance from its scope.
-
-
-##### `$onFailure`
-The `callback` function that gets called when spam **is** detected...
-this function will have access to the `SpamGuardModel` instance from its scope.
-
-_Callbak functions may end execution or perform redirects but if they don't..
-they will be executed and the value of the spam detection method will be returned._
-
-#### Example
-This function can be called from your own Controller but pay attention to its signature and the way _Craft_ calls methods on plugins.
-
-```php
-$args = array(
-	'content'	=> 'I get so angry when the liquor cabinet is empty.',
-	'author'	=> 'Angry Brad',
-	'email'		=> 'angry@brad.com',
-	'onSuccess'	=> function() {},
-	'onFailure'	=> function() {}
-);
-
-$response = craft()->plugins->call('spamGuardDetectSpam', $args)
-
-// The $response will be an array of plugin reponses matching the method name you called
-// In our case, it might return something like this...
-
-array(
-	'SpamGuard'	=> false
-);
-
-// It returns false probably because Brad might be an angry drunken fool but his content is solid;)
-```
-
-----
-#### `actionSendMessage()`
-`@spamguard/SpamGuardController.php`
-
-_This action allows you to submit the built in `contact form` that comes with `Spam Guard` which you can configure from the plugin settings_.
-
-### Workflow Examples
-_Non yet but I plan on adding some as soon as I get a chance... in the meantime, if you need help with implementation just drop me a line!_
-
-### TODO
-- Work on production ready release candidate (0.5)
-- Screencast showing different use case implementations might be helpful
-- Sample workflows for contact form submissions
-
-*For now though, I would appriciate any feedback you may have so that __Spam Guard__ can be production ready quicker.*
-
-### Feedback & Support
-If you have any feedback or questions please reach out to me on twitter [@selvinortiz](http://twitter.com/selvinortiz)
 
 ### MIT License
 *Spam Guard for Craft* is released under the [MIT license](http://opensource.org/licenses/MIT) which pretty much means you can do with it as you please and I won't get mad because I'm that nice; )

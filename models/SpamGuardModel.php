@@ -6,6 +6,7 @@ class SpamGuardModel extends BaseModel
 	public function defineAttributes()
 	{
 		return array(
+			'id'			=> array(AttributeType::Number),
 			'email'			=> array(AttributeType::Email,	'required'	=> true),
 			'author'		=> array(AttributeType::String,	'maxLength'	=> 50),
 			'content'		=> array(AttributeType::String,	'column'	=> ColumnType::Text),

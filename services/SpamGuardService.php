@@ -17,6 +17,8 @@ class SpamGuardService extends BaseApplicationComponent
 				'originUrl'	=> $plugin->getSettings()->akismetOriginUrl
 			);
 
+			require(craft()->path->getPluginsPath().'spamguard/library/Kismet.php');
+
 			$this->spamguard = new Kismet($params);
 		}
 
@@ -69,6 +71,23 @@ class SpamGuardService extends BaseApplicationComponent
 		);
 
 		return $this->isSpam($data);
+	}
+
+	public function deleteLog($id)
+	{
+		$log = SpamGuardRecord::model()->findById($id);
+
+		if ($log)
+		{
+			return $log->delete();
+		}
+
+		return false;
+	}
+
+	public function deleteLogs()
+	{
+		return SpamGuardRecord::model()->deleteAll();
 	}
 
 	protected function addLog($data)
