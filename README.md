@@ -8,7 +8,7 @@ Spam Guard allows you to harness the power of Akismet to fight spam
 * The most effective way to fight spam in **Craft**
 * Lightweight Akismet API client built on **Guzzle**
 * Basic submission logging to avoid loosing incorrectly flagged emails
-* Native support for the [Contact From](https://github.com/pixelandtonic/ContactForm) plugin.
+* Native support for the [Contact Form](https://github.com/pixelandtonic/ContactForm) plugin.
 
 ### Minimum Requirements
 - Craft 1.3 build 2415
@@ -20,7 +20,7 @@ Spam Guard allows you to harness the power of Akismet to fight spam
 3. Adjust file permissions as necessary
 4. Install **Spam Guard** from the **Control Panel**
 5. Set up your **Akismet/WordPress API Key** (get one from [akismet.com](http://akismet.com))
-6. Enable _contact form support_ from the plugin settings screen
+6. Enable **contact form support** from the plugin settings screen
 
 ----
 
@@ -29,10 +29,11 @@ If you'd like to use **Spam Guard** alongside **Contact Form**, all you have to 
 
 1. Set up your form as outlined in the [Contact Form](https://github.com/pixelandtonic/ContactForm) examples.
 2. Make sure you follow the installation instructions for **Spam Guard**
-3. You should be good to go, easy hu?!
+3. To test things out, just submit your form with **viagra-test-123** as the name/author.
 
 ### Notes
 Spam Guard will log every submission and let you see them in the the control panel.
+
 This will evolve over time but for now, it's there if you need to make sure you're not getting incorrect flags.
 
 ### Feedback & Support
@@ -42,6 +43,7 @@ If you have any feedback or questions please reach out to me on twitter [@selvin
 
 ----
 #### 0.5.0 (Production Preview)
+This version must be installed after any previous version has been removed.
 
 - Adds native support for `contactform` by P&T
 - Adds a brand new `akismet` client built on **Guzzle** written by **Selvin Ortiz**
