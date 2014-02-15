@@ -22,7 +22,7 @@ class SpamGuardVariable
 
 	public function getUrl()
 	{
-		return sprintf('/%s/%s', craft()->config->get('cpTrigger'), 'spamguard');
+		return sprintf('/%s/spamguard', craft()->config->get('cpTrigger'));
 	}
 
 	public function getLogs(array $attributes=array())

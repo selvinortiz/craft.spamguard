@@ -1,4 +1,4 @@
-## Spam Guard 0.5.0
+## Spam Guard 0.5.1
 *by* [Selvin Ortiz](http://twitter.com/selvinortiz)
  ----
 ### Description

@@ -4,7 +4,7 @@
     <buildFilePaths>
       <buildFile path="file://$PROJECT_DIR$/build/build.xml" />
     </buildFilePaths>
-    <phingPath>C:/Server/phing.phar</phingPath>
+    <phingPath>$USER_HOME$/phing-latest.phar</phingPath>
   </component>
 </project>
 

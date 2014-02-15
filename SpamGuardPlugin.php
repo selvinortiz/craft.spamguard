@@ -2,12 +2,12 @@
 namespace Craft;
 
 /**
- * Spam Guard 0.5.0
+ * Spam Guard 0.5.1
  *
  * Spam Guard allows you to harness the power of Akismet to fight spam
  *
  * @author		Selvin Ortiz - http://twitter.com/selvinortiz
- * @package		SpamGuard
+ * @package		Spam Guard
  * @category	Craft CMS
  * @copyright	2014 Selvin Ortiz
  * @license		https://github.com/selvinortiz/craft.spamguard/blob/master/license.txt
@@ -43,10 +43,7 @@ class SpamGuardPlugin extends BasePlugin
 	 */
 	public function getName($real=false)
 	{
-		if ($real)
-		{
-			return 'Spam Guard';
-		}
+		if ($real) { return 'Spam Guard'; }
 
 		$alias = $this->getSettings()->pluginAlias;
 
@@ -55,7 +52,7 @@ class SpamGuardPlugin extends BasePlugin
 
 	public function getVersion()
 	{
-		return '0.5.0';
+		return '0.5.1';
 	}
 
 	public function getDeveloper()
@@ -86,7 +83,7 @@ class SpamGuardPlugin extends BasePlugin
 
 	public function getSettingsHtml()
 	{
-		craft()->templates->includeCssResource('spamguard/css/spamguard.css');
+		craft()->templates->includeCssResource('spamguard/css/spamguard.min.css');
 
 		return craft()->templates->render(
 			'spamguard/_settings.html',
@@ -101,10 +98,10 @@ class SpamGuardPlugin extends BasePlugin
 	 *
 	 * Allows your own plugin to verify spammy content by using craft()->plugins->call()
 	 *
-	 * @since    0.4.2
-	 * @param	array	$data email, author, content
-	 * @param	bool	$onSuccess
-	 * @param	bool	$onFailure
+	 * @since   0.4.2
+	 * @param	array	{ email: "", author: "", content: "" }
+	 * @param	mixed	$onSuccess	Set to false or a callable function to execute on success
+	 * @param	mixed	$onFailure	Set to false or a callable function to execute on failure
 	 * @return  bool	Whether spam was detected
 	 */
 	public function spamGuardDetectSpam(array $data, $onSuccess=false, $onFailure=false)
