@@ -4,22 +4,20 @@
 *by* [Selvin Ortiz](http://twitter.com/selvinortiz)
 
 ----
+### Download Notes
+You must download the [latest release](https://github.com/selvinortiz/craft.spamguard/releases) with the following name pattern `spamguard.v*.*.*.zip`
 
-### Download
-To use *spam guard* in production, you must download the [latest release](https://github.com/selvinortiz/craft.spamguard/releases) with the following name pattern `spamguard.v*.*.*.zip`
-
-Downloading the *repo* itself will yield to missing *composer* dependencies!
+The official release is the only distribution meant for production and it is required when requesting support or reporting a bug.
 
 ----
-
 ### Description
 Spam Guard allows you to harness the power of Akismet to fight spam
 
 ### Features
-* The most effective way to fight spam in **Craft**
+* The most effective way to fight _contact form spam_ in **Craft**
 * Lightweight Akismet API client built on **Guzzle**
-* Basic submission logging to avoid loosing incorrectly flagged emails
-* Native support for the [Contact Form](https://github.com/pixelandtonic/ContactForm) plugin.
+* Basic submission logging to avoid losing incorrectly flagged emails
+* Native support for the [Contact Form](https://github.com/pixelandtonic/ContactForm) plugin
 
 ### Minimum Requirements
 - Craft 1.3 build 2415
@@ -36,16 +34,11 @@ Spam Guard allows you to harness the power of Akismet to fight spam
 ----
 
 ### Usage
-If you'd like to use **Spam Guard** alongside **Contact Form**, all you have to do is...
+*Spamg Guard* can protect you from *spam* submitted via your _contact form_. To enable it, just follow the instructions below.
 
 1. Set up your form as outlined in the [Contact Form](https://github.com/pixelandtonic/ContactForm) examples.
 2. Make sure you follow the installation instructions for **Spam Guard**
-3. To test things out, just submit your form with **viagra-test-123** as the name/author.
-
-### Notes
-Spam Guard will log every submission and let you see them in the the control panel.
-
-This will evolve over time but for now, it's there if you need to make sure you're not getting incorrect flags.
+3. Run some tests by using *viagra-123-test* as the value for your *name* field.
 
 ### Feedback & Support
 If you have any feedback or questions please reach out to me on twitter [@selvinortiz](http://twitter.com/selvinortiz)
@@ -53,7 +46,6 @@ If you have any feedback or questions please reach out to me on twitter [@selvin
 ### Changelog
 
 ----
-
 #### 0.5.1
 - Adds a new release distribution
 - Adds submission logging setting to make logging optional and avoid db hits
@@ -165,5 +157,7 @@ and it also ensures that the functions have easy to understand names that hint a
 #### 0.1
 Initial preview release
 
-### MIT License
-*Spam Guard for Craft* is released under the [MIT license](http://opensource.org/licenses/MIT) which pretty much means you can do with it as you please and I won't get mad because I'm that nice; )
+### License
+**Spam Guard** for _craft_ is open source software licensed under the [MIT license](http://opensource.org/licenses/MIT)
+
+![Open Source Initiative](resources/img/osilogo.png)
