@@ -2,7 +2,7 @@
 namespace Craft;
 
 /**
- * Spam Guard 0.5.1
+ * Spam Guard 0.5.2
  *
  * Spam Guard allows you to harness the power of Akismet to fight spam
  *
@@ -47,7 +47,7 @@ class SpamGuardPlugin extends BasePlugin
 
 	public function getVersion()
 	{
-		return '0.5.1';
+		return '0.5.2';
 	}
 
 	public function getDeveloper()
@@ -115,5 +115,15 @@ class SpamGuardPlugin extends BasePlugin
 		}
 
 		return $isSpam;
+	}
+
+	public function onAfterInstall()
+	{
+		craft()->request->redirect(
+			sprintf(
+				'/%s/settings/plugins/spamguard',
+				craft()->config->get('cpTrigger')
+				)
+			);
 	}
 }

@@ -1,6 +1,6 @@
 ![Spam Guard](resources/img/spamguard.png)
 
-## Spam Guard 0.5.1
+## Spam Guard 0.5.2
 *by* [Selvin Ortiz](http://twitter.com/selvinortiz)
 
 ----
@@ -9,6 +9,7 @@ You must download the [latest release](https://github.com/selvinortiz/craft.spam
 
 The official release is the only distribution meant for production and it is required when requesting support or reporting a bug.
 
+_This version should be a fresh install if your previous version is below *Spam Guard 0.5.0*_!
 ----
 ### Description
 Spam Guard allows you to harness the power of Akismet to fight spam
@@ -44,6 +45,11 @@ Spam Guard allows you to harness the power of Akismet to fight spam
 If you have any feedback or questions please reach out to me on twitter [@selvinortiz](http://twitter.com/selvinortiz)
 
 ### Changelog
+
+----
+#### 0.5.2
+- Adds automatic redirection to settings after install
+- Updates documentation and license
 
 ----
 #### 0.5.1
