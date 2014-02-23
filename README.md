@@ -9,7 +9,8 @@ You must download the [latest release](https://github.com/selvinortiz/craft.spam
 
 The official release is the only distribution meant for production and it is required when requesting support or reporting a bug.
 
-_This version should be a fresh install if your previous version is below *Spam Guard 0.5.0*_!
+_This version should be a fresh install if your previous version is below Spam Guard 0.5.0_
+
 ----
 ### Description
 Spam Guard allows you to harness the power of Akismet to fight spam
