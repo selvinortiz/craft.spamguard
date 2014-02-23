@@ -1,14 +1,14 @@
 {% import "_includes/forms" as forms %}
 
-{% set name		= craft.spamguard.getName(true) %}
-{% set alias	= craft.spamguard.getName() %}
+{% set name		= craft.spamguard.getName() %}
+{% set alias	= craft.spamguard.getName(false) %}
 {% set version	= craft.spamguard.getVersion() %}
-{% set origin	= settings.akismetOriginUrl|length ? settings.akismetOriginUrl : siteUrl %}
+{% set origin	= settings.akismetOriginUrl | length ? settings.akismetOriginUrl : siteUrl %}
 
 {% block content %}
 	<div id="spamGuardSettings">
 		<h2>
-			<a href="{{ craft.spamguard.getUrl }}">
+			<a href="{{ craft.spamguard.getUrl() }}">
 				{{ name }} <span class="subtle">V{{ version }} {% if alias != name %}AKA ({{ alias }}){% endif %}</span>
 			</a>
 		</h2>
@@ -59,7 +59,15 @@
 					on:			settings.enableFormSupport
 				})
 			}}
-
+			<p>
+				<a href="{{ craft.spamguard.getUrl() }}" title="View Logs">Log</a> Submissions To Database?
+			</p>
+			{{
+				forms.lightswitch({
+					name:		"logSubmissions",
+					on:			settings.logSubmissions
+				})
+			}}
 		</div>
 
 		<div class="spamGuardSection">

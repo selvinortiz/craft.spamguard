@@ -17,7 +17,7 @@ class SpamGuardService extends BaseApplicationComponent
 				'originUrl'	=> $plugin->getSettings()->akismetOriginUrl
 			);
 
-			require(craft()->path->getPluginsPath().'spamguard/library/Kismet.php');
+			require_once craft()->path->getPluginsPath().'spamguard/library/Kismet.php';
 
 			$this->spamguard = new Kismet($params);
 		}
@@ -92,19 +92,22 @@ class SpamGuardService extends BaseApplicationComponent
 
 	protected function addLog($data)
 	{
-		$record					= new SpamGuardRecord();
-		$record->email			= $this->fetch('email', $data);
-		$record->author			= $this->fetch('author', $data);
-		$record->content		= $this->fetch('content', $data);
-		$record->isKeyValid		= $this->fetch('isKeyValid', $data, null);
-		$record->flaggedAsSpam	= $this->fetch('flaggedAsSpam', $data, true);
-		$record->isSpam			= $this->fetch('isSpam', $data, null);
-		$record->isHam			= $this->fetch('isHam', $data, null);
-		$record->data			= $this->fetch('data', $data, array());
-
-		if ($record->validate())
+		if (craft()->plugins->getPlugin('spamguard')->getSettings()->logSubmissions)
 		{
-			$record->save();
+			$record					= new SpamGuardRecord();
+			$record->email			= $this->fetch('email', $data);
+			$record->author			= $this->fetch('author', $data);
+			$record->content		= $this->fetch('content', $data);
+			$record->isKeyValid		= $this->fetch('isKeyValid', $data, null);
+			$record->flaggedAsSpam	= $this->fetch('flaggedAsSpam', $data, true);
+			$record->isSpam			= $this->fetch('isSpam', $data, null);
+			$record->isHam			= $this->fetch('isHam', $data, null);
+			$record->data			= $this->fetch('data', $data, array());
+
+			if ($record->validate())
+			{
+				$record->save();
+			}
 		}
 
 		return false;

@@ -8,22 +8,17 @@ namespace Craft;
  *
  * @author		Selvin Ortiz - http://twitter.com/selvinortiz
  * @package		Spam Guard
- * @category	Craft CMS
  * @copyright	2014 Selvin Ortiz
- * @license		https://github.com/selvinortiz/craft.spamguard/blob/master/license.txt
- * @link		https://github.com/selvinortiz/craft.spamguard
+ * @license		[MIT]
  */
 
 class SpamGuardPlugin extends BasePlugin
 {
-	/**
-	 * Listens for form events
-	 */
 	public function init()
 	{
 		if ($this->getSettings()->enableFormSupport)
 		{
-			craft()->on('contactForm.beforeSend', function(ContactFormEvent $event)
+			craft()->on('contactForm.beforeSend', function(Event $event)
 			{
 				$spam = craft()->spamGuard->detectContactFormSpam($event->params['message']);
 
@@ -41,7 +36,7 @@ class SpamGuardPlugin extends BasePlugin
 	 * @param	bool	$real	Whether the real name should be returned
 	 * @return	string
 	 */
-	public function getName($real=false)
+	public function getName($real=true)
 	{
 		if ($real) { return 'Spam Guard'; }
 
@@ -76,6 +71,7 @@ class SpamGuardPlugin extends BasePlugin
 			'akismetApiKey'		=> array(AttributeType::String, 'required'=>true, 'maxLength'=>25),
 			'akismetOriginUrl'	=> array(AttributeType::String, 'required'=>true, 'maxLength'=>255),
 			'enableFormSupport'	=> AttributeType::Bool,
+			'logSubmissions'	=> AttributeType::Bool,
 			'enableCpTab'		=> AttributeType::Bool,
 			'pluginAlias'		=> AttributeType::String
 		);

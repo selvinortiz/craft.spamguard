@@ -7,17 +7,18 @@ class SpamGuardController extends BaseController
 
 	public function actionDeleteLog()
 	{
+		$this->requireAdmin();
 		$this->requirePostRequest();
 
 		$deleted = craft()->spamGuard->deleteLog(@$_POST['id']);
 
 		if ($deleted)
 		{
-			craft()->userSession->setNotice(Craft::t('Spam Guard: Log deleted successfully'));
+			craft()->userSession->setNotice($this->msg('Log deleted successfully'));
 		}
 		else
 		{
-			craft()->userSession->setError(Craft::t('Spam Guard: Unable to delete that log'));
+			craft()->userSession->setError($this->msg('Unable to delete that log'));
 		}
 
 		$this->redirectToPostedUrl();
@@ -25,6 +26,7 @@ class SpamGuardController extends BaseController
 
 	public function actionDeleteLogs()
 	{
+		$this->requireAdmin();
 		$this->requirePostRequest();
 
 		if (isset($_POST['confirmation']) && $_POST['confirmation'] == true)
@@ -33,16 +35,16 @@ class SpamGuardController extends BaseController
 
 			if ($deleted)
 			{
-				craft()->userSession->setNotice(Craft::t('Spam Guard: Everything was trashed!'));
+				craft()->userSession->setNotice($this->msg('Everything was trashed'));
 			}
 			else
 			{
-				craft()->userSession->setError(Craft::t('Spam Guard: Unable to trash everything!'));
+				craft()->userSession->setError($this->msg('Unable to trash everything'));
 			}
 		}
 		else
 		{
-			craft()->userSession->setError(Craft::t('Spam Guard: You must confirm this action!'));
+			craft()->userSession->setError($this->msg('You must confirm this action'));
 		}
 
 		$this->redirectToPostedUrl();
@@ -56,5 +58,10 @@ class SpamGuardController extends BaseController
 	public function actionSubmitHam()
 	{
 		//...
+	}
+
+	public function msg($message='', $prefix='Spam Guard: ')
+	{
+		return $prefix.Craft::t($message);
 	}
 }

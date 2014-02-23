@@ -14,7 +14,9 @@ class SpamGuardModel extends BaseModel
 			'flaggedAsSpam'	=> AttributeType::Bool,
 			'isSpam'		=> AttributeType::Bool,
 			'isHam'			=> AttributeType::Bool,
-			'data'			=> AttributeType::Mixed
+			'data'			=> AttributeType::Mixed,
+			'dateCreated'	=> AttributeType::DateTime,
+			'dateUpdated'	=> AttributeType::DateTime
 		);
 	}
 }

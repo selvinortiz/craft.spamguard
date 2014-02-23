@@ -1,6 +1,17 @@
+![Spam Guard](resources/img/spamguard.png)
+
 ## Spam Guard 0.5.1
 *by* [Selvin Ortiz](http://twitter.com/selvinortiz)
- ----
+
+----
+
+### Download
+To use *spam guard* in production, you must download the [latest release](https://github.com/selvinortiz/craft.spamguard/releases) with the following name pattern `spamguard.v*.*.*.zip`
+
+Downloading the *repo* itself will yield to missing *composer* dependencies!
+
+----
+
 ### Description
 Spam Guard allows you to harness the power of Akismet to fight spam
 
@@ -42,6 +53,15 @@ If you have any feedback or questions please reach out to me on twitter [@selvin
 ### Changelog
 
 ----
+
+#### 0.5.1
+- Adds a new release distribution
+- Adds submission logging setting to make logging optional and avoid db hits
+- Fixes line endings and platform inconsistencies
+- Improves the settings template by including logging setting
+- Improves error reporting and notices
+- Improves the `SpamGuardModel` by accepting audit properties
+
 #### 0.5.0 (Production Preview)
 This version must be installed after any previous version has been removed.
 

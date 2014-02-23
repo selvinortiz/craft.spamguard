@@ -10,7 +10,7 @@ class SpamGuardVariable
 		$this->plugin = craft()->plugins->getPlugin('spamGuard');
 	}
 
-	public function getName($real=false)
+	public function getName($real=true)
 	{
 		return $this->plugin->getName($real);
 	}

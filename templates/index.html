@@ -1,17 +1,18 @@
 {% extends "_layouts/cp" %}
 
-{% set title = craft.spamguard.getName(true) %}
+{% set title = craft.spamguard.getName() %}
 
 {% set extraPageHeaderHtml %}
 	<a class="btn settings icon" href="{{ url('settings/plugins/spamguard') }}" title="{{ 'Settings'|t }}"></a>
 {% endset %}
 
-{% set logs = craft.spamguard.getLogs %}
+{% set logs = craft.spamguard.getLogs() %}
 
 {% set content %}
+	<h2>Submission Logs</h2>
 	<table class="data specGrid">
 		<tr>
-			<th>#</th>
+			<th>Date/Time</th>
 			<th>Email</th>
 			<th>Author</th>
 			<th colspan="2">Content</th>
@@ -20,10 +21,10 @@
 		</tr>
 		{% for log in logs %}
 		<tr>
-			<td>{{ loop.index }}</td>
+			<td>{{ log.dateCreated | date("Y/m/d g:iA") }}</td>
 			<td>{{ log.email }}</td>
 			<td>{{ log.author }}</td>
-			<td colspan="2" class="typewriter">{{ log.content|nl2br }}</td>
+			<td colspan="2" class="typewriter">{{ log.content | nl2br }}</td>
 			<td>{{ log.flaggedAsSpam ? log.isKeyValid ? "Yes" : "Yes*" : "No" }}</td>
 			<td>
 				<form action="" method="POST">
@@ -36,7 +37,7 @@
 		{% endfor %}
 	</table>
 
-	{% if logs|length > 1 %}
+	{% if logs | length > 1 %}
 		<div class="actionSet">
 			<div>
 				<form action="" method="POST">
