@@ -1,6 +1,10 @@
 {% extends "_layouts/cp" %}
 
-{% set title = craft.spamguard.getName() %}
+{% set title		= craft.spamguard.getName(true) %}
+{% set name			= craft.spamguard.getName(true) %}
+{% set version		= craft.spamguard.getVersion() %}
+{% set developer	= craft.spamguard.getDeveloper() %}
+{% set developerUrl	= craft.spamguard.getDeveloperUrl() %}
 
 {% set extraPageHeaderHtml %}
 	<a class="btn settings icon" href="{{ url('settings/plugins/spamguard') }}" title="{{ 'Settings'|t }}"></a>
@@ -9,8 +13,11 @@
 {% set logs = craft.spamguard.getLogs() %}
 
 {% set content %}
-	<h2>Submission Logs</h2>
-	<table class="data specGrid">
+	<h2>Logged Submissions</h2>
+	{% if logs | length <= 0 %}
+		<p>Nothing, you have a clean slate for now: )</p>
+	{% else %}
+	<table class="data spamguardGrid">
 		<tr>
 			<th>Date/Time</th>
 			<th>Email</th>
@@ -36,19 +43,26 @@
 		</tr>
 		{% endfor %}
 	</table>
-
-	{% if logs | length > 1 %}
-		<div class="actionSet">
-			<div>
-				<form action="" method="POST">
-					<input type="hidden" name="action" value="spamGuard/deleteLogs"/>
-					<input type="hidden" name="confirmation" value=""/>
-					<button type="submit" class="btn submit icon delete">Trash Everything</button>
-					<input type="checkbox" name="confirmation" value="1"/> <strong>Yeah, do it!</strong>
-				</form>
-			</div>
+	<div class="actionSet">
+		<div>
+			<form action="" method="POST">
+				<input type="hidden" name="action" value="spamGuard/deleteLogs"/>
+				<input type="hidden" name="confirmation" value=""/>
+				<button type="submit" class="btn submit icon delete">Trash Everything</button>
+				<input type="checkbox" name="confirmation" value="1"/> <strong>Yeah, do it!</strong>
+			</form>
 		</div>
+	</div>
 	{% endif %}
+
+	<div class="spamguardSection credits">
+		<p>
+			&copy; {{ "now" | date("Y") }}
+			<strong>{{ name }} <span class="spamguardSubtle">({{ version }})</span></strong>
+			Lovingly crafted by
+			<a href="{{- developerUrl -}}" title="@selvinortiz" target="_blank">{{- developer -}}</a>
+		</p>
+	</div>
 {% endset %}
 
 {% includeCssFile('resources/spamguard/css/spamguard.css') %}

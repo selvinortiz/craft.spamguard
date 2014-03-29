@@ -56,9 +56,4 @@ class SpamGuardTest extends BaseTest
 
 		$this->spamGuardService = new SpamGuardService();
 	}
-
-	protected function inspect($data)
-	{
-		fwrite(STDERR, print_r($data));
-	}
 }

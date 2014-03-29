@@ -1,5 +1,5 @@
 <?php
-namespace selvinortiz\spamguard;
+namespace SelvinOrtiz\Kismet;
 
 use Guzzle\Http\Client;
 
@@ -58,7 +58,7 @@ class Kismet
 			return (bool) ('true' == $response);
 		}
 
-		throw new Exception('The key provided is not valid or has expired.');
+		throw new InvalidKeyException;
 	}
 
 	public function submitSpam(array $data=array())
@@ -108,12 +108,23 @@ class Kismet
 		return array_merge(
 			array(
 				'blog'			=> \Craft\craft()->getSiteUrl(),
-				'user_ip'		=> $_SERVER['REMOTE_ADDR'],
+				'user_ip'		=> $this->getRequestingIp(),
 				'user_agent'	=> $this->getUserAgent(),
 				'comment_type'	=> 'Entry'
 			),
 			$extraParams
 		);
+	}
+
+	/**
+	 * Ensures that we get the right IP address even if behind CloudFlare
+	 *
+	 * @todo	Add support for IPV6 and Proxy servers (Overkill?)
+	 * @return	string
+	 */
+	public function getRequestingIp()
+	{
+		return isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
 	}
 
 	protected function getUserAgent()

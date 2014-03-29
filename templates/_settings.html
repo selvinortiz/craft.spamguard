@@ -1,31 +1,28 @@
 {% import "_includes/forms" as forms %}
 
-{% set name		= craft.spamguard.getName() %}
-{% set alias	= craft.spamguard.getName(false) %}
-{% set version	= craft.spamguard.getVersion() %}
-{% set origin	= settings.akismetOriginUrl | length ? settings.akismetOriginUrl : siteUrl %}
+{% set name			= craft.spamguard.getName(true) %}
+{% set alias		= craft.spamguard.getName() %}
+{% set version		= craft.spamguard.getVersion() %}
+{% set developer	= craft.spamguard.getDeveloper() %}
+{% set developerUrl	= craft.spamguard.getDeveloperUrl() %}
 
 {% block content %}
-	<div id="spamGuardSettings">
+	<div class="spamguardSettings">
 		<h2>
-			<a href="{{ craft.spamguard.getUrl() }}">
-				{{ name }} <span class="subtle">V{{ version }} {% if alias != name %}AKA ({{ alias }}){% endif %}</span>
-			</a>
+			{{ name }} <span class="spamguardSubtle">V{{ version }} {% if alias != name %}AKA ({{ alias }}){% endif %}</span>
 		</h2>
 		<p>
-			<em>{{ name }}</em> allows you to harness the power of
-			<a href="http://akismet.com/" title="Akismet">Akismet</a>
-			to fight spam.
+			Spam Guard harnesses the power of <a href="http://akismet" target="_blank">Akismet</a> to fight spam on your behalf.
 		</p>
 
-		<div class="spamGuardSection">
-			<h3 class="ico security">Akismet Settings</h3>
+		<div class="spamguardSection">
+			<h3 class="glyph general">General Settings</h3>
 			{{
 				forms.textField({
 					id:				"akismetApiKey",
 					name:			"akismetApiKey",
 					label:			"Akismet API Key"|t,
-					instructions:	"The <a href='http://akismet.com'>Akismet</a> service requires a <em>WordPress</em> API Key."|t,
+					instructions:	"The [Akismet](http://akismet.com) service requires a _WordPress_ API Key."|t,
 					value:			settings.akismetApiKey,
 					first:			true,
 					autofocus:		true,
@@ -37,46 +34,59 @@
 					id:				"akismetOriginUrl",
 					name:			"akismetOriginUrl",
 					label:			"Origin URL"|t,
-					instructions:	"Your website (<a href='#{siteUrl}'>#{siteUrl}</a>) or blog URL"|t,
-					value:			origin,
+					instructions:	"Your website "~siteUrl~" or blog URL"|t,
+					value:			settings.akismetOriginUrl,
 					first:			false,
 					autofocus:		false,
 					errors:			""
 				})
 			}}
-		</div>
-
-		<div class="spamGuardSection">
-			<h3 class="ico form">Form Settings</h3>
-			<p>
-				Enable
-				<a href="https://github.com/pixelandtonic/ContactForm" title="Contact Form by P &amp; T">Contact Form</a>
-				Support?
-			</p>
 			{{
-				forms.lightswitch({
-					name:		"enableFormSupport",
-					on:			settings.enableFormSupport
-				})
-			}}
-			<p>
-				<a href="{{ craft.spamguard.getUrl() }}" title="View Logs">Log</a> Submissions To Database?
-			</p>
-			{{
-				forms.lightswitch({
-					name:		"logSubmissions",
-					on:			settings.logSubmissions
+				forms.checkboxField({
+					id:				"logSubmissions",
+					name:			"logSubmissions",
+					label:			"Log Submissions To Database?"|t,
+					checked:		settings.logSubmissions,
+					instructions:	"This will tell **Spam Guard** to log all [submissions]("~craft.spamguard.getPluginCpUrl()~") that get filtered through it"|t,
+					errors:			""
 				})
 			}}
 		</div>
 
-		<div class="spamGuardSection">
-			<h3 class="ico settings">Plugin Settings</h3>
-			<p>Display Plugin Tab?</p>
+		<div class="spamguardSection">
+			<h3 class="glyph thirdparty">Integration Settings</h3>
 			{{
-				forms.lightswitch({
-					name:		"enableCpTab",
-					on:			settings.enableCpTab
+				forms.checkboxField({
+					id:				"enableContactFormSupport",
+					name:			"enableContactFormSupport",
+					label:			"Enable Contact Form Support?"|t,
+					checked:		settings.enableContactFormSupport,
+					instructions:	"This features requires [Contact Form 1.3](https://github.com/pixelandtonic/ContactForm) or above"|t,
+					errors:			""
+				})
+			}}
+			{{
+				forms.checkboxField({
+					id:				"enableGuestEntriesSupport",
+					name:			"enableGuestEntriesSupport",
+					label:			"Enable Guest Entries Support?"|t,
+					checked:		settings.enableGuestEntriesSupport,
+					instructions:	"This features requires [Guest Entries](https://github.com/pixelandtonic/GuestEntries) and **Craft 1.4** or above"|t,
+					errors:			""
+				})
+			}}
+		</div>
+
+		<div class="spamguardSection">
+			<h3 class="glyph settings">Plugin Settings</h3>
+			{{
+				forms.checkboxField({
+					id:				"enableCpTab",
+					name:			"enableCpTab",
+					label:			"Display Plugin Tab?"|t,
+					checked:		settings.enableCpTab,
+					instructions:	"This features shows/hides the plugin tab in the main navigation"|t,
+					errors:			""
 				})
 			}}
 			{{
@@ -91,14 +101,13 @@
 			}}
 		</div>
 
-		<div class="spamGuardSection credits">
+		<div class="spamguardSection credits">
 			<p>
 				&copy; {{ "now" | date("Y") }}
-				<strong>Patrol <span class="subtle">({{ version }})</span></strong>
-				<em>by</em>
-				<a href="http://twitter.com/selvinortiz" title="@selvinortiz" target="_blank">Selvin Ortiz</a>
+				<strong>{{ name }} <span class="spamguardSubtle">({{ version }})</span></strong>
+				{{ "Lovingly crafted by"|t }}
+				<a href="{{- developerUrl -}}" title="@selvinortiz" target="_blank">{{- developer -}}</a>
 			</p>
 		</div>
 	</div>
-
 {% endblock %}

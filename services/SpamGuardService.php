@@ -1,7 +1,8 @@
 <?php
 namespace Craft;
 
-use \selvinortiz\spamguard\Kismet;
+use \SelvinOrtiz\Kismet\Kismet;
+use \SelvinOrtiz\Kismet\InvalidKeyException;
 
 class SpamGuardService extends BaseApplicationComponent
 {
@@ -17,8 +18,6 @@ class SpamGuardService extends BaseApplicationComponent
 				'originUrl'	=> $plugin->getSettings()->akismetOriginUrl
 			);
 
-			require_once craft()->path->getPluginsPath().'spamguard/library/Kismet.php';
-
 			$this->spamguard = new Kismet($params);
 		}
 
@@ -26,21 +25,46 @@ class SpamGuardService extends BaseApplicationComponent
 	}
 
 	/**
-	 * isSpam()
-	 * $data may contain email, author, and content keys.
-	 * 
-	 * @param  array   $data
+	 * The core validation method, checks whether content is considered spammy
+	 *
+	 * @param  array   $data	The array containing the key/value pairs to validate
+	 *
+	 * @example
+	 * $data		= array(
+	 * 	'email'		=> 'john@smith.com',
+	 * 	'author'	=> 'John Smith',
+	 * 	'content'	=> 'We are Smith & Co, one of the best companies in the world.'
+	 * )
+	 *
+	 * $data['content'] (required)
+	 *
 	 * @return boolean
 	 */
 	public function isSpam(array $data=array())
 	{
 		$spamguard		= $this->loadSpamGuard();
-		$isKeyValid		= $spamguard->isKeyValid();
-		$flaggedAsSpam	= true;
+		$isKeyValid		= true;
+		$flaggedAsSpam	= false;
 
-		if ($isKeyValid)
+		try
 		{
 			$flaggedAsSpam = $spamguard->isSpam($data);
+		}
+		catch(InvalidKeyException $e)
+		{
+			if (craft()->userSession->isAdmin())
+			{
+				$cp = craft()->config->get('cpTrigger');
+
+				craft()->userSession->setError($e->getMessage());
+				craft()->request->redirect("/{$cp}/settings/plugins/spamguard");
+			}
+			else
+			{
+				$isKeyValid	= false;
+
+				Craft::log($e->getMessage(), LogLevel::Warning);
+			}
 		}
 
 		$params = array_merge($data, array(
@@ -69,6 +93,62 @@ class SpamGuardService extends BaseApplicationComponent
 			'author'	=> $form->fromName,
 			'email'		=> $form->fromEmail
 		);
+
+		return $this->isSpam($data);
+	}
+
+	/**
+	 * Guest Entries beforeSave()
+	 *
+	 * Allows you to use spamguard alongside the guestentries plugin by P&T
+	 *
+	 * @since	0.5.3
+	 * @param	BaseModel $entry
+	 * @return	boolean
+	 */
+	public function detectGuestEntrySpam(BaseModel $entry)
+	{
+		$data	= array();
+		$fields	= craft()->request->getPost('spamguard.validationFields');
+
+		if (empty($fields))
+		{
+			Craft::log(Craft::t('Guest Entries support is enabled in Spam Guard but no fields are configure for validation.'), LogLevel::Warning);
+
+			return false;
+		}
+
+		$email		= $this->getEntryFieldValue(craft()->request->getPost('spamguard.emailField'), $entry);
+		$author		= $this->getEntryFieldValue(craft()->request->getPost('spamguard.authorField'), $entry);
+		$fields		= array_map('trim', explode(',', $fields));
+		$content	= '';
+
+		if ($email)
+		{
+			$data['email'] = $email;
+		}
+
+		if ($author)
+		{
+			$data['author'] = $author;
+		}
+
+		foreach ($fields as $field)
+		{
+			if (isset($entry->$field))
+			{
+				$content .= (string) $entry->$field.PHP_EOL;
+			}
+		}
+
+		$content = trim($content);
+
+		if (empty($content))
+		{
+			return false;
+		}
+		
+		$data['content'] = $content;
 
 		return $this->isSpam($data);
 	}
@@ -129,9 +209,43 @@ class SpamGuardService extends BaseApplicationComponent
 		return $models;
 	}
 
-	public function fetch($key, array $arr=array(), $def=false)
+	public function fetch($key, array $arr = array(), $def = false)
 	{
 		return array_key_exists($key, $arr) ? $arr[$key] : $def;
 	}
-}
 
+	/**
+	 * Parses a field string from a spamguard input to return the entry value for that field
+	 *
+	 * @param	string		$field		The entry field string to fetch > "firstName, lastName"
+	 * @param	BaseModel	$entry		The entry model provided by GuestEntriesEvent
+	 * @param	mixed		$default	The default value to return if no entry->field found
+	 */
+	public function getEntryFieldValue($field = '', BaseModel $entry, $default = null)
+	{
+		if (empty($field))
+		{
+			return $default;
+		}
+
+		if (stripos($field, ',') === false)
+		{
+			return ( ! empty($field) && isset($entry->$field) ) ? $entry->$field : $default;
+		}
+
+		$values	= array();
+		$fields	= array_map('trim', explode(',', $field));
+
+		unset($field);
+
+		foreach ($fields as $field)
+		{
+			if ( ! empty($field) && isset($entry->$field) )
+			{
+				$values[] = (string) $entry->field;
+			}
+		}
+
+		return count($values) ? implode(' ', $values) : $default;
+	}
+}

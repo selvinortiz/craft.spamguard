@@ -1,32 +1,49 @@
 <?php
 namespace Craft;
 
+/**
+ * Spam Guard @v0.5.3
+ *
+ * Spam Guard harnesses the power of Akismet to fight spam
+ *
+ * @author		Selvin Ortiz - http://twitter.com/selvinortiz
+ * @package		Spam Guard
+ * @copyright	2014 Selvin Ortiz
+ * @license		[MIT]
+ */
 class SpamGuardVariable
 {
 	protected $plugin;
+	protected $service;
 
 	public function __construct()
 	{
-		$this->plugin = craft()->plugins->getPlugin('spamGuard');
+		$this->plugin	= craft()->plugins->getPlugin('spamGuard');
+		$this->service	= craft()->spamGuard;
 	}
 
-	public function getName($real=true)
+	/**
+	 * Allows the plugin and service methods to be called via craft.spamguard
+	 *
+	 * @param	string	$method		The method name that was called
+	 * @param	array	$params		The array of parameters that were passed
+	 *
+	 * @throws	\BadMethodCallException
+	 * 
+	 * @return	mixed	The returned value from the callable
+	 */
+	public function __call($method, array $params=array())
 	{
-		return $this->plugin->getName($real);
-	}
+		if (method_exists($this->plugin, $method))
+		{
+			return call_user_func_array(array($this->plugin, $method), $params);
+		}
 
-	public function getVersion()
-	{
-		return $this->plugin->getVersion();
-	}
+		if (method_exists($this->service, $method))
+		{
+			return call_user_func_array(array($this->service, $method), $params);
+		}
 
-	public function getUrl()
-	{
-		return sprintf('/%s/spamguard', craft()->config->get('cpTrigger'));
-	}
-
-	public function getLogs(array $attributes=array())
-	{
-		return craft()->spamGuard->getLogs($attributes);
+		throw new \BadMethodCallException(Craft::t('{m} is not a valid/callable method.', array('m' => $method)));
 	}
 }

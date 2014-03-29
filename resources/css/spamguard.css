@@ -1,39 +1,38 @@
-#spamGuardSettings h2,
-#spamGuardSettings h3 {
+.spamguardSettings h2, .spamguardSettings h3 {
   color: #444;
 }
-#spamGuardSettings h3.ico {
+.spamguardSettings h3.glyph {
   padding-left: 32px;
   line-height: 32px;
   background-repeat: no-repeat;
   background-position: left center;
 }
-#spamGuardSettings h3.security {
-  background-image: url(../img/security.png);
+.spamguardSettings h3.general {
+  background-image: url(../img/general.png);
 }
-#spamGuardSettings h3.form {
-  background-image: url(../img/form.png);
+.spamguardSettings h3.thirdparty {
+  background-image: url(../img/thirdparty.png);
 }
-#spamGuardSettings h3.settings {
+.spamguardSettings h3.settings {
   background-image: url(../img/settings.png);
 }
-#spamGuardSettings .subtle {
+.spamguardSubtle {
   color: #bbb;
 }
-#spamGuardSettings .notice {
+.spamguardNotice {
   color: #aaa;
   font-family: serif;
   font-style: italic;
 }
-#spamGuardSettings .spamGuardSection {
-  margin-top: 40px;
-  padding-top: 20px;
-  border-top: 1px dotted #bbb;
+.spamguardSection {
+  margin: 20px 0;
+  padding: 20px 0;
+  border-top: 1px dotted #ddd;
 }
-.specGrid td.typewriter {
+.spamguardGrid td.typewriter {
   font-size: 12px;
   font-family: monospace;
 }
-.actionSet {
-  margin-top: 40px;
+.spamguardActions {
+  margin: 40px 0;
 }
