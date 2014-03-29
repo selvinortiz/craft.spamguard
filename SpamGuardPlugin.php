@@ -36,13 +36,17 @@ class SpamGuardPlugin extends BasePlugin
 	 * @param	bool	$real	Whether the real name should be returned
 	 * @return	string
 	 */
-	public function getName($real=true)
+	public function getName($real=false)
 	{
-		if ($real) { return 'Spam Guard'; }
+		$name	= 'Spam Guard';
+		$alias	= $this->getSettings()->pluginAlias;
 
-		$alias = $this->getSettings()->pluginAlias;
+		if ($real)
+		{
+			return $name;
+		}
 
-		return empty($alias) ? 'Spam Guard' : Craft::t($alias);
+		return empty($alias) ? $name : $alias;
 	}
 
 	public function getVersion()
