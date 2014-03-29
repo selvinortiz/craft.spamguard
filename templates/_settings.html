@@ -1,6 +1,6 @@
 {% import "_includes/forms" as forms %}
 
-{% set name		= craft.spamguard.getName() %}
+{% set name			= craft.spamguard.getName() %}
 {% set alias		= craft.spamguard.getName(false) %}
 {% set version		= craft.spamguard.getVersion() %}
 {% set developer	= craft.spamguard.getDeveloper() %}
@@ -24,7 +24,7 @@
 			<h3 class="ico security">Akismet Settings</h3>
 			{{
 				forms.textField({
-					id:			"akismetApiKey",
+					id:				"akismetApiKey",
 					name:			"akismetApiKey",
 					label:			"Akismet API Key"|t,
 					instructions:	"The <a href='http://akismet.com'>Akismet</a> service requires a <em>WordPress</em> API Key."|t,
@@ -58,7 +58,7 @@
 			{{
 				forms.lightswitch({
 					name:		"enableFormSupport",
-					on:		settings.enableFormSupport
+					on:			settings.enableFormSupport
 				})
 			}}
 			<p>
@@ -67,7 +67,7 @@
 			{{
 				forms.lightswitch({
 					name:		"logSubmissions",
-					on:		settings.logSubmissions
+					on:			settings.logSubmissions
 				})
 			}}
 		</div>
@@ -78,15 +78,15 @@
 			{{
 				forms.lightswitch({
 					name:		"enableCpTab",
-					on:		settings.enableCpTab
+					on:			settings.enableCpTab
 				})
 			}}
 			{{
 				forms.textField({
-					id:			"pluginAlias",
+					id:				"pluginAlias",
 					name:			"pluginAlias",
 					label:			"Plugin Alias"|t,
-					instructions:		"Allows you to rename <strong>"~name~"</strong> to something more meaningful while retaining its name internally."|t,
+					instructions:	"Allows you to rename <strong>"~name~"</strong> to something more meaningful while retaining its name internally."|t,
 					value:			alias,
 					errors:			""
 				})
