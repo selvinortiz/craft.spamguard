@@ -1,9 +1,11 @@
 {% import "_includes/forms" as forms %}
 
-{% set name		= craft.spamguard.getName() %}
-{% set alias	= craft.spamguard.getName(false) %}
-{% set version	= craft.spamguard.getVersion() %}
-{% set origin	= settings.akismetOriginUrl | length ? settings.akismetOriginUrl : siteUrl %}
+{% set name			= craft.spamguard.getName() %}
+{% set alias		= craft.spamguard.getName(false) %}
+{% set version		= craft.spamguard.getVersion() %}
+{% set developer	= craft.spamguard.getDeveloper() %}
+{% set devUrl		= craft.spamguard.getDeveloperUrl() %}
+{% set origin		= settings.akismetOriginUrl | length ? settings.akismetOriginUrl : siteUrl %}
 
 {% block content %}
 	<div id="spamGuardSettings">
@@ -94,9 +96,9 @@
 		<div class="spamGuardSection credits">
 			<p>
 				&copy; {{ "now" | date("Y") }}
-				<strong>Patrol <span class="subtle">({{ version }})</span></strong>
+				<strong>{{ name }} <span class="subtle">({{ version }})</span></strong>
 				<em>by</em>
-				<a href="http://twitter.com/selvinortiz" title="@selvinortiz" target="_blank">Selvin Ortiz</a>
+				<a href="{{ devUrl }}" title="@selvinortiz" target="_blank">{{ developer }}</a>
 			</p>
 		</div>
 	</div>

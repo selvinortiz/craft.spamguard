@@ -19,7 +19,16 @@ class SpamGuardVariable
 	{
 		return $this->plugin->getVersion();
 	}
-
+	
+	public function getDeveloper()
+	{
+		return $this->plugin->getDeveloper();
+	}
+	
+	public function getDeveloperUrl()
+	{
+		return $this->plugin->getDeveloperUrl();
+	}
 	public function getUrl()
 	{
 		return sprintf('/%s/spamguard', craft()->config->get('cpTrigger'));
