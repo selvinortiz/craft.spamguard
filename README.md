@@ -1,6 +1,6 @@
 ![Spam Guard](resources/img/spamguard.png)
 
-# Spam Guard
+# Spam Guard 0.5.3
 
 Lovingly crafted by [Selvin Ortiz][developer] for [Craft CMS][craftcms]
 
