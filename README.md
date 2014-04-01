@@ -20,7 +20,7 @@ Potantial spam submitted via [Guest Entries][guestentries] and [Contact Form][co
 - [Contact Form 1.3][contactform] _for contact form support_
 - [Guest Entries 1.1][guestentries]  _for guest entries support_
 
-_Please note that [Guest Entries][guestentries] requires Craft 1.4 or above_
+_Please note that [Guest Entries][guestentries] requires Craft **2.0** or above_
 
 ## Usage
 Spam Guard offers a few ways to help you fight spam, all of which are outlined below...
