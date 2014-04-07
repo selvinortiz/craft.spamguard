@@ -113,7 +113,7 @@ class SpamGuardService extends BaseApplicationComponent
 
 		if (empty($fields))
 		{
-			Craft::log(Craft::t('Guest Entries support is enabled in Spam Guard but no fields are configure for validation.'), LogLevel::Warning);
+			Craft::log(Craft::t('Guest Entries support is enabled in Spam Guard but no fields are configured for validation.'), LogLevel::Warning);
 
 			return false;
 		}

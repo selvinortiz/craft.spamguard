@@ -3,8 +3,6 @@ namespace Craft;
 
 class SpamGuardController extends BaseController
 {
-	protected $allowAnonymous = array('actionDeleteLog');
-
 	public function actionDeleteLog()
 	{
 		$this->requireAdmin();
@@ -18,7 +16,7 @@ class SpamGuardController extends BaseController
 		}
 		else
 		{
-			craft()->userSession->setError($this->msg('Unable to delete that log'));
+			craft()->userSession->setError($this->msg('Unable to delete log'));
 		}
 
 		$this->redirectToPostedUrl();

@@ -1,11 +1,11 @@
 ![Spam Guard](resources/img/spamguard.png)
 
-# Spam Guard 0.5.3
+# Spam Guard 0.5.4
 
 Lovingly crafted by [Selvin Ortiz][developer] for [Craft CMS][craftcms]
 
 **Spam Guard** harnesses the power of [Akismet][akismet] to fight spam on your behalf.  
-Potantial spam submitted via [Guest Entries][guestentries] and [Contact Form][contactform] can be monitored automatically or you may use the`spamguardDetectSpam` method provided by calling it from your own plugin.
+Potantial spam submitted via [Guest Entries][guestentries] and [Contact Form][contactform] can be monitored automatically or you may use the `spamguardDetectSpam()` method provided by calling it from your own plugin.
 
 ## Installation
 1. Download the [Official Release][release]
@@ -90,7 +90,7 @@ Spam Guard is open source software licensed under the [MIT license][license]
 ![Open Source Initiative][osilogo]
 
 [developer]:http://twitter.com/selvinortiz "@selvinortiz"
-[release]:https://github.com/selvinortiz/craft.spamguard/releases/download/v0.5.3/spamguard.v0.5.3.zip "Official Release"
+[release]:https://github.com/selvinortiz/craft.spamguard/releases/download/v0.5.4/spamguard.v0.5.4.zip "Official Release"
 [license]:https://raw.github.com/selvinortiz/craft.spamguard/master/LICENSE "MIT License"
 [changelog]:https://github.com/selvinortiz/craft.spamguard/blob/master/CHANGELOG.md "Changelog"
 [craftcms]:http://buildwithcraft.com "Craft CMS"

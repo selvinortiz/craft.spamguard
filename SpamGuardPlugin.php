@@ -2,9 +2,9 @@
 namespace Craft;
 
 /**
- * Spam Guard @v0.5.3
+ * Spam Guard @v0.5.4
  *
- * Spam Guard harnesses the power of Akismet to fight spam
+ * Spam Guard harnesses the power of Akismet to fight spam on your behalf
  *
  * @author		Selvin Ortiz - http://twitter.com/selvinortiz
  * @package		Spam Guard
@@ -14,7 +14,7 @@ namespace Craft;
 class SpamGuardPlugin extends BasePlugin
 {
 	/**
-	 * This method enables support for third plugins
+	 * Enables support for third party plugins
 	 *
 	 * @return	void
 	 */
@@ -34,7 +34,7 @@ class SpamGuardPlugin extends BasePlugin
 			});
 		}
 
-		// Support for guestEntries.beforeSave
+		// Support for guestEntries.beforeSave()
 		if ($this->getSettings()->enableGuestEntriesSupport)
 		{
 			craft()->on('guestEntries.beforeSave', function(Event $event)
@@ -81,7 +81,7 @@ class SpamGuardPlugin extends BasePlugin
 
 	public function getVersion()
 	{
-		return '0.5.3';
+		return '0.5.4';
 	}
 
 	public function getDeveloper()
@@ -108,7 +108,7 @@ class SpamGuardPlugin extends BasePlugin
 
 	public function defineSettings()
 	{
-		$url = Craft::getSiteUrl();
+		$url = craft()->getSiteUrl();
 
 		return array(
 			'akismetApiKey'				=> array(AttributeType::String,	'required' => true, 'maxLength' => 25),

@@ -4,6 +4,11 @@ Lovingly crafted by [Selvin Ortiz][developer] for [Craft CMS][craftcms]
 
 ## Changelog
 
+### 0.5.4
+- Fixes deprecation issue #6 in Craft 2.0
+- Fixes some typos in code comments and the README
+- Improves styling for logged submissions
+
 ### 0.5.3
 - Adds native support for [Guest Entries][guestentries] by [P&T][pixelandtonic]
 - Fixes a typo in the footer from code reuse outlined on issue #2
