@@ -2,7 +2,7 @@
 namespace Craft;
 
 /**
- * Spam Guard @v0.5.4
+ * Spam Guard @v0.5.5
  *
  * Spam Guard harnesses the power of Akismet to fight spam on your behalf
  *
@@ -81,7 +81,7 @@ class SpamGuardPlugin extends BasePlugin
 
 	public function getVersion()
 	{
-		return '0.5.4';
+		return '0.5.5';
 	}
 
 	public function getDeveloper()

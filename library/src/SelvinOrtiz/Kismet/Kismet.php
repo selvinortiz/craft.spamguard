@@ -2,6 +2,7 @@
 namespace SelvinOrtiz\Kismet;
 
 use Guzzle\Http\Client;
+use SelvinOrtiz\Kismet\Exception\InvalidKeyException;
 
 /**
  * Kismet is a simple and modern client for the Akismet API
@@ -79,7 +80,7 @@ class Kismet
 			return (bool) ('Thanks for making the web a better place.' == $response);
 		}
 
-		throw new Exception('The key provided is not valid or has expired.');
+		throw new InvalidKeyException;
 	}
 
 	public function submitHam(array $data=array())
@@ -100,7 +101,7 @@ class Kismet
 			return (bool) ('Thanks for making the web a better place.' == $response);
 		}
 
-		throw new Exception('The key provided is not valid or has expired.');
+		throw new InvalidKeyException;
 	}
 
 	protected function mergeWithDefaultParams(array $extraParams=array())

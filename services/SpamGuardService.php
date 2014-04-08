@@ -12,10 +12,10 @@ class SpamGuardService extends BaseApplicationComponent
 	{
 		if (is_null($this->spamguard))
 		{
-			$plugin	= craft()->plugins->getPlugin('spamguard');
-			$params	= array(
-				'apiKey'	=> $plugin->getSettings()->akismetApiKey,
-				'originUrl'	=> $plugin->getSettings()->akismetOriginUrl
+			$settings	= craft()->plugins->getPlugin('spamguard')->getSettings();
+			$params		= array(
+				'apiKey'	=> $settings->akismetApiKey,
+				'originUrl'	=> craft()->config->parseEnvironmentString($settings->akismetOriginUrl)
 			);
 
 			$this->spamguard = new Kismet($params);

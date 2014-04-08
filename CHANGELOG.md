@@ -4,6 +4,11 @@ Lovingly crafted by [Selvin Ortiz][developer] for [Craft CMS][craftcms]
 
 ## Changelog
 
+### 0.5.5
+- Adds `InvalidKeyException` reference to `submitSpam()` and `submitHam()`
+- Adds the ability to use `{siteUrl}` as the **Origin URL** in settings
+- Fixes missing `InvalidKeyException` reference in issue #7
+
 ### 0.5.4
 - Fixes deprecation issue #6 in Craft 2.0
 - Fixes some typos in code comments and the README
