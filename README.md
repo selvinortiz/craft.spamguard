@@ -90,7 +90,7 @@ Spam Guard is open source software licensed under the [MIT license][license]
 ![Open Source Initiative][osilogo]
 
 [developer]:http://twitter.com/selvinortiz "@selvinortiz"
-[release]:https://github.com/selvinortiz/craft.spamguard/releases/download/v0.5.4/spamguard.v0.5.4.zip "Official Release"
+[release]:https://github.com/selvinortiz/craft.spamguard/releases/download/v0.5.5/spamguard.v0.5.5.zip "Official Release"
 [license]:https://raw.github.com/selvinortiz/craft.spamguard/master/LICENSE "MIT License"
 [changelog]:https://github.com/selvinortiz/craft.spamguard/blob/master/CHANGELOG.md "Changelog"
 [craftcms]:http://buildwithcraft.com "Craft CMS"
