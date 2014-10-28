@@ -1,53 +1,83 @@
 <?php
-namespace SelvinOrtiz\Kismet;
+namespace Craft;
 
 use Guzzle\Http\Client;
-use SelvinOrtiz\Kismet\Exception\InvalidKeyException;
 
 /**
- * Kismet is a simple and modern client for the Akismet API
- *
+ * Class		SpamGuardKismet
  * @author		Selvin Ortiz <selvin@selvin.co>
- * @package		spamguard
+ * @package		Spam Guard
  * @version		1.0
  * @license		http://opensource.org/licenses/MIT Copyright 2014 Selvin Ortiz
  * @copyright	Selvin Ortiz
  */
-class Kismet
+
+class SpamGuardKismet
 {
+	/**
+	 * @var string
+	 */
 	protected $apiKey;
+
+	/**
+	 * @var string
+	 */
 	protected $originUrl;
+
+	/**
+	 * @var Client
+	 */
 	protected $httpClient;
 
+	/**
+	 * The URL endpoint to the akismet API
+	 */
 	const ENDPOINT = 'rest.akismet.com/1.1';
 
-	public function __construct(array $data=array())
+	/**
+	 * @param BaseModel		$pluginSettings
+	 * @param null|Client	$httpClient
+	 */
+	public function __construct(BaseModel $pluginSettings, $httpClient=null)
 	{
-		$this->apiKey		= $this->fetch('apiKey', $data, null);
-		$this->originUrl	= $this->fetch('originUrl', $data, null);
-		$this->httpClient	= $this->fetch('httpClient', $data, new Client());
+		$this->apiKey		= $pluginSettings->getAttribute('akismetApiKey');
+		$this->originUrl	= $pluginSettings->getAttribute('akismetOriginUrl');
+		$this->httpClient	= $httpClient ? $httpClient : new Client;
 	}
 
-	public function isKeyValid(array $data=array())
+	/**
+	 * Checks whether the API key is valid
+	 *
+	 * @return bool
+	 */
+	public function isKeyValid()
 	{
 		$params = array(
-			'key'	=> $this->fetch('apiKey', $data, $this->apiKey),
-			'blog'	=> $this->fetch('originUrl', $data, $this->originUrl)
+			'key'	=> $this->apiKey,
+			'blog'	=> $this->originUrl,
 		);
 
 		$request	= $this->httpClient->post($this->getKeyEndpoint(), null, $params);
 		$response	= (string) $request->send()->getBody();
 
-		return (bool) ($response == 'valid');
+		return (bool) ('valid' === $response);
 	}
 
+	/**
+	 * Validates potential spam against the Akismet API
+	 *
+	 * @param array $data
+	 *
+	 * @throws SpamGuardInvalidKeyException
+	 * @return bool
+	 */
 	public function isSpam(array $data=array())
 	{
 		$params = $this->mergeWithDefaultParams(
 			array(
-				'comment_author'		=> $this->fetch('author', $data),
-				'comment_content'		=> $this->fetch('content', $data),
-				'comment_author_email'	=> $this->fetch('email', $data)
+				'comment_author'		=> isset($data['author']) ? $data['author'] : null,
+				'comment_content'		=> isset($data['content']) ? $data['content'] : null,
+				'comment_author_email'	=> isset($data['email']) ? $data['email'] : null,
 			)
 		);
 
@@ -59,16 +89,22 @@ class Kismet
 			return (bool) ('true' == $response);
 		}
 
-		throw new InvalidKeyException;
+		throw new SpamGuardInvalidKeyException;
 	}
 
+	/**
+	 * @param array $data
+	 *
+	 * @throws SpamGuardInvalidKeyException
+	 * @return bool
+	 */
 	public function submitSpam(array $data=array())
 	{
 		$params = $this->mergeWithDefaultParams(
 			array(
-				'comment_author'		=> $this->fetch('author', $data),
-				'comment_content'		=> $this->fetch('content', $data),
-				'comment_author_email'	=> $this->fetch('email', $data)
+				'comment_author'		=> isset($data['author']) ? $data['author'] : null,
+				'comment_content'		=> isset($data['content']) ? $data['content'] : null,
+				'comment_author_email'	=> isset($data['email']) ? $data['email'] : null,
 			)
 		);
 
@@ -80,16 +116,22 @@ class Kismet
 			return (bool) ('Thanks for making the web a better place.' == $response);
 		}
 
-		throw new InvalidKeyException;
+		throw new SpamGuardInvalidKeyException;
 	}
 
+	/**
+	 * @param array $data
+	 *
+	 * @throws SpamGuardInvalidKeyException
+	 * @return bool
+	 */
 	public function submitHam(array $data=array())
 	{
 		$params = $this->mergeWithDefaultParams(
 			array(
-				'comment_author'		=> $this->fetch('author', $data),
-				'comment_content'		=> $this->fetch('content', $data),
-				'comment_author_email'	=> $this->fetch('email', $data)
+				'comment_author'		=> isset($data['author']) ? $data['author'] : null,
+				'comment_content'		=> isset($data['content']) ? $data['content'] : null,
+				'comment_author_email'	=> isset($data['email']) ? $data['email'] : null,
 			)
 		);
 
@@ -101,14 +143,19 @@ class Kismet
 			return (bool) ('Thanks for making the web a better place.' == $response);
 		}
 
-		throw new InvalidKeyException;
+		throw new SpamGuardInvalidKeyException;
 	}
 
+	/**
+	 * @param array $extraParams
+	 *
+	 * @return array
+	 */
 	protected function mergeWithDefaultParams(array $extraParams=array())
 	{
 		return array_merge(
 			array(
-				'blog'			=> \Craft\craft()->getSiteUrl(),
+				'blog'			=> craft()->getSiteUrl(),
 				'user_ip'		=> $this->getRequestingIp(),
 				'user_agent'	=> $this->getUserAgent(),
 				'comment_type'	=> 'Entry'
@@ -130,14 +177,9 @@ class Kismet
 
 	protected function getUserAgent()
 	{
-		return 'Craft 1.3 | Spam Guard 0.5';
+		return 'Craft 2.2 | Spam Guard 0.6.0';
 	}
 
-	protected function fetch($key, array $arr=array(), $def=false)
-	{
-		return array_key_exists($key, $arr) ? $arr[$key] : $def;
-	}
-	
 	protected function getKeyEndpoint()
 	{
 		return sprintf('http://%s/verify-key', self::ENDPOINT);

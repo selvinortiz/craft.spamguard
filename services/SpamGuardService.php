@@ -1,33 +1,39 @@
 <?php
 namespace Craft;
 
-use \SelvinOrtiz\Kismet\Kismet;
-use \SelvinOrtiz\Kismet\InvalidKeyException;
+/**
+ * Class SpamGuardService
+ *
+ * @author	Selvin Ortiz
+ * @package	Craft
+ */
 
 class SpamGuardService extends BaseApplicationComponent
 {
-	protected $spamguard;
+	/**
+	 * The akismet client written from scratch for Spam Guard by Selvin Ortiz
+	 * @var SpamGuardKismet
+	 */
+	protected $kismet;
 
-	public function loadSpamGuard()
+	/**
+	 * @var BaseModel
+	 */
+	protected $pluginSettings;
+
+	/**
+	 * Initializes the component and the akismet client
+	 */
+	public function init()
 	{
-		if (is_null($this->spamguard))
-		{
-			$settings	= craft()->plugins->getPlugin('spamguard')->getSettings();
-			$params		= array(
-				'apiKey'	=> $settings->akismetApiKey,
-				'originUrl'	=> craft()->config->parseEnvironmentString($settings->akismetOriginUrl)
-			);
-
-			$this->spamguard = new Kismet($params);
-		}
-
-		return $this->spamguard;
+		$this->pluginSettings	= craft()->plugins->getPlugin('spamguard')->getSettings();
+		$this->kismet			= new SpamGuardKismet($this->pluginSettings);
 	}
 
 	/**
-	 * The core validation method, checks whether content is considered spammy
+	 * Checks whether the content is consider spam as far as akismet is concerned
 	 *
-	 * @param  array   $data	The array containing the key/value pairs to validate
+	 * @param array $data The array containing the key/value pairs to validate
 	 *
 	 * @example
 	 * $data		= array(
@@ -36,28 +42,25 @@ class SpamGuardService extends BaseApplicationComponent
 	 * 	'content'	=> 'We are Smith & Co, one of the best companies in the world.'
 	 * )
 	 *
-	 * $data['content'] (required)
+	 * @note $data[content] is required
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function isSpam(array $data=array())
 	{
-		$spamguard		= $this->loadSpamGuard();
 		$isKeyValid		= true;
 		$flaggedAsSpam	= false;
 
 		try
 		{
-			$flaggedAsSpam = $spamguard->isSpam($data);
+			$flaggedAsSpam = $this->kismet->isSpam($data);
 		}
-		catch(InvalidKeyException $e)
+		catch(SpamGuardInvalidKeyException $e)
 		{
 			if (craft()->userSession->isAdmin())
 			{
-				$cp = craft()->config->get('cpTrigger');
-
 				craft()->userSession->setError($e->getMessage());
-				craft()->request->redirect("/{$cp}/settings/plugins/spamguard");
+				craft()->request->redirect(sprintf('/%s/settings/plugins/spamguard/', craft()->config->get('cpTrigger')));
 			}
 			else
 			{
@@ -80,7 +83,7 @@ class SpamGuardService extends BaseApplicationComponent
 	/**
 	 * Contact Form beforeSend()
 	 *
-	 * Allows you to use spamguard alongside the contactform plugin by P&T
+	 * Allows you to use spamguard alongside the Contact Form plugin by P&T
 	 *
 	 * @since	0.4.7
 	 * @param	BaseModel $form
@@ -89,9 +92,9 @@ class SpamGuardService extends BaseApplicationComponent
 	public function detectContactFormSpam(BaseModel $form)
 	{
 		$data = array(
-			'content'	=> $form->message,
-			'author'	=> $form->fromName,
-			'email'		=> $form->fromEmail
+			'content'	=> $form->getAttribute('message'),
+			'author'	=> $form->getAttribute('fromName'),
+			'email'		=> $form->getAttribute('fromEmail'),
 		);
 
 		return $this->isSpam($data);
@@ -100,89 +103,82 @@ class SpamGuardService extends BaseApplicationComponent
 	/**
 	 * Guest Entries beforeSave()
 	 *
-	 * Allows you to use spamguard alongside the guestentries plugin by P&T
+	 * Allows you to use spamguard alongside the Guest Entries plugin by P&T
 	 *
 	 * @since	0.5.3
-	 * @param	BaseModel $entry
+	 * @param	EntryModel $entry
 	 * @return	boolean
 	 */
-	public function detectGuestEntrySpam(BaseModel $entry)
+	public function detectGuestEntrySpam(EntryModel $entry)
 	{
-		$data	= array();
-		$fields	= craft()->request->getPost('spamguard.validationFields');
+		$data			= array();
+		$emailField		= craft()->request->getPost('spamguard.emailField');
+		$authorField	= craft()->request->getPost('spamguard.authorField');
+		$contentField	= craft()->request->getPost('spamguard.contentField');
 
-		if (empty($fields))
+		if (empty($contentField))
 		{
-			Craft::log(Craft::t('Guest Entries support is enabled in Spam Guard but no fields are configured for validation.'), LogLevel::Warning);
+			SpamGuardPlugin::log('Guest Entries support is enabled in Spam Guard but no fields are configured for validation.', LogLevel::Warning);
 
 			return false;
 		}
 
-		$email		= $this->getEntryFieldValue(craft()->request->getPost('spamguard.emailField'), $entry);
-		$author		= $this->getEntryFieldValue(craft()->request->getPost('spamguard.authorField'), $entry);
-		$fields		= array_map('trim', explode(',', $fields));
-		$content	= '';
-
-		if ($email)
+		try
 		{
-			$data['email'] = $email;
+			$data['email']		= craft()->templates->renderObjectTemplate($emailField, $entry);
+			$data['author']		= craft()->templates->renderObjectTemplate($authorField, $entry);
+			$data['content']	= craft()->templates->renderObjectTemplate($contentField, $entry);
 		}
-
-		if ($author)
+		catch(Exception $e)
 		{
-			$data['author'] = $author;
-		}
+			SpamGuardPlugin::log('Unable to fetch the field values from the entry.', LogLevel::Error);
 
-		foreach ($fields as $field)
-		{
-			if (isset($entry->$field))
-			{
-				$content .= (string) $entry->$field.PHP_EOL;
-			}
-		}
-
-		$content = trim($content);
-
-		if (empty($content))
-		{
 			return false;
 		}
-		
-		$data['content'] = $content;
 
 		return $this->isSpam($data);
 	}
 
+	/**
+	 * Deletes a log by id
+	 *
+	 * @param $id
+	 *
+	 * @return bool|void
+	 * @throws \CDbException
+	 */
 	public function deleteLog($id)
 	{
 		$log = SpamGuardRecord::model()->findById($id);
 
 		if ($log)
 		{
-			return $log->delete();
+			$log->delete();
+
+			return true;
 		}
 
 		return false;
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function deleteLogs()
 	{
 		return SpamGuardRecord::model()->deleteAll();
 	}
 
+	/**
+	 * @param $data
+	 *
+	 * @return bool
+	 */
 	protected function addLog($data)
 	{
-		if (craft()->plugins->getPlugin('spamguard')->getSettings()->logSubmissions)
+		if ($this->pluginSettings->getAttribute('logSubmissions'))
 		{
-			$record					= new SpamGuardRecord();
-			$record->email			= $this->fetch('email', $data);
-			$record->author			= $this->fetch('author', $data);
-			$record->content		= $this->fetch('content', $data);
-			$record->isKeyValid		= $this->fetch('isKeyValid', $data, null);
-			$record->flaggedAsSpam	= $this->fetch('flaggedAsSpam', $data, true);
-			$record->isSpam			= $this->fetch('isSpam', $data, null);
-			$record->isHam			= $this->fetch('isHam', $data, null);
-			$record->data			= $this->fetch('data', $data, array());
+			$record					= SpamGuardRecord::model()->populateRecord($data);
 
 			if ($record->validate())
 			{
@@ -193,6 +189,13 @@ class SpamGuardService extends BaseApplicationComponent
 		return false;
 	}
 
+	/**
+	 * Returns an array of logs if any are found
+	 *
+	 * @param array $attributes
+	 *
+	 * @return array
+	 */
 	public function getLogs(array $attributes=array())
 	{
 		$models		= array();
@@ -207,45 +210,5 @@ class SpamGuardService extends BaseApplicationComponent
 		}
 
 		return $models;
-	}
-
-	public function fetch($key, array $arr = array(), $def = false)
-	{
-		return array_key_exists($key, $arr) ? $arr[$key] : $def;
-	}
-
-	/**
-	 * Parses a field string from a spamguard input to return the entry value for that field
-	 *
-	 * @param	string		$field		The entry field string to fetch > "firstName, lastName"
-	 * @param	BaseModel	$entry		The entry model provided by GuestEntriesEvent
-	 * @param	mixed		$default	The default value to return if no entry->field found
-	 */
-	public function getEntryFieldValue($field = '', BaseModel $entry, $default = null)
-	{
-		if (empty($field))
-		{
-			return $default;
-		}
-
-		if (stripos($field, ',') === false)
-		{
-			return ( ! empty($field) && isset($entry->$field) ) ? $entry->$field : $default;
-		}
-
-		$values	= array();
-		$fields	= array_map('trim', explode(',', $field));
-
-		unset($field);
-
-		foreach ($fields as $field)
-		{
-			if ( ! empty($field) && isset($entry->$field) )
-			{
-				$values[] = (string) $entry->field;
-			}
-		}
-
-		return count($values) ? implode(' ', $values) : $default;
 	}
 }

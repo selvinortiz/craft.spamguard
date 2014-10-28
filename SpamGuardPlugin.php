@@ -2,7 +2,7 @@
 namespace Craft;
 
 /**
- * Spam Guard @v0.5.5
+ * Spam Guard @v0.6.0
  *
  * Spam Guard harnesses the power of Akismet to fight spam on your behalf
  *
@@ -11,21 +11,26 @@ namespace Craft;
  * @copyright	2014 Selvin Ortiz
  * @license		[MIT]
  */
+
 class SpamGuardPlugin extends BasePlugin
 {
 	/**
 	 * Enables support for third party plugins
 	 *
-	 * @return	void
+	 * @throws Exception
+	 * @return void
 	 */
 	public function init()
 	{
-		// Support for contact.beforeSend()
-		if ($this->getSettings()->enableContactFormSupport)
+		Craft::import('plugins.spamguard.common.*');
+
+		#
+		# Support for contactForm.beforeSend()
+		if ($this->getSettings()->getAttribute('enableContactFormSupport'))
 		{
 			craft()->on('contactForm.beforeSend', function(Event $event)
 			{
-				$spam = craft()->spamGuard->detectContactFormSpam($event->params['message']);
+				$spam = spamGuard()->detectContactFormSpam($event->params['message']);
 
 				if ($spam)
 				{
@@ -34,12 +39,13 @@ class SpamGuardPlugin extends BasePlugin
 			});
 		}
 
-		// Support for guestEntries.beforeSave()
-		if ($this->getSettings()->enableGuestEntriesSupport)
+		#
+		# Support for guestEntries.beforeSave()
+		if ($this->getSettings()->getAttribute('enableGuestEntriesSupport'))
 		{
 			craft()->on('guestEntries.beforeSave', function(Event $event)
 			{
-				$spam = craft()->spamGuard->detectGuestEntrySpam($event->params['entry']);
+				$spam = spamGuard()->detectGuestEntrySpam($event->params['entry']);
 
 				if ($spam)
 				{
@@ -47,80 +53,73 @@ class SpamGuardPlugin extends BasePlugin
 				}
 			});
 		}
-
-		// Load dependencies
-		$bootstrap = craft()->path->getPluginsPath().'spamguard/library/vendor/autoload.php';
-
-		if (!file_exists($bootstrap))
-		{
-			throw new Exception(Craft::t('Please download the latest release or read the install notes'));
-		}
-
-		require_once $bootstrap;
 	}
 
 	/**
-	 * Gets the name of the plugin or its alias given by end user
+	 * Returns the name of the plugin or the alias given by the end user
 	 *
-	 * @param	boolean	$real	Whether the real plugin name should be returned
+	 * @param bool $real
 	 *
-	 * @return	string
+	 * @return string
 	 */
 	public function getName($real=false)
 	{
-		$name	= 'Spam Guard';
-		$alias	= $this->getSettings()->pluginAlias;
+		$alias	= $this->getSettings()->getAttribute('pluginAlias');
 
-		if ($real)
-		{
-			return $name;
-		}
-
-		return empty($alias) ? $name : $alias;
+		return ($real || empty($alias)) ? 'Spam Guard' : $alias;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getVersion()
 	{
-		return '0.5.5';
+		return '0.6.0';
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getDeveloper()
 	{
 		return 'Selvin Ortiz';
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getDeveloperUrl()
 	{
 		return 'http://twitter.com/selvinortiz';
 	}
 
-	public function getPluginCpUrl()
-	{
-		$cp = craft()->config->get('cpTrigger');
-
-		return "/{$cp}/settings/plugins/spamguard";
-	}
-
+	/**
+	 * @return bool
+	 */
 	public function hasCpSection()
 	{
-		return $this->getSettings()->enableCpTab;
+		return $this->getSettings()->getAttribute('enableCpTab');
 	}
 
+	/**
+	 * @return array
+	 */
 	public function defineSettings()
 	{
-		$url = craft()->getSiteUrl();
-
 		return array(
-			'akismetApiKey'				=> array(AttributeType::String,	'required' => true, 'maxLength' => 25),
-			'akismetOriginUrl'			=> array(AttributeType::String,	'required' => true, 'default' => $url),
-			'enableContactFormSupport'	=> array(AttributeType::Bool,	'default' => true, 'required'),
-			'enableGuestEntriesSupport'	=> array(AttributeType::Bool,	'default' => true),
-			'logSubmissions'			=> array(AttributeType::Bool,	'default' => false),
-			'enableCpTab'				=> array(AttributeType::Bool,	'default' => true),
-			'pluginAlias'				=> AttributeType::String
+			'akismetApiKey'				=> array(AttributeType::String,	'required'	=> true,	'maxLength' => 25),
+			'akismetOriginUrl'			=> array(AttributeType::String,	'required'	=> true),
+			'enableContactFormSupport'	=> array(AttributeType::Bool,	'default'	=> true),
+			'enableGuestEntriesSupport'	=> array(AttributeType::Bool,	'default'	=> true),
+			'logSubmissions'			=> array(AttributeType::Bool,	'default'	=> false),
+			'enableCpTab'				=> array(AttributeType::Bool,	'default'	=> true),
+			'pluginAlias'				=> AttributeType::String,
 		);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getSettingsHtml()
 	{
 		$settings = $this->getSettings();
@@ -129,40 +128,15 @@ class SpamGuardPlugin extends BasePlugin
 
 		return craft()->templates->render('spamguard/_settings', compact('settings'));
 	}
+}
 
-	/**
-	 * spamGuardDetectSpam()
-	 *
-	 * Allows your own plugin to verify spammy content by using craft()->plugins->call()
-	 *
-	 * @since   0.4.2
-	 * @param	array('email' => '', 'author' => '', 'content' => 'Content to check for spam.')
-	 * @param	mixed	$onSuccess	Set to false or a callable function to execute on success
-	 * @param	mixed	$onFailure	Set to false or a callable function to execute on failure
-	 *
-	 * @return  bool	Whether spam was detected
-	 */
-	public function spamGuardDetectSpam(array $data, $onSuccess=false, $onFailure=false)
-	{
-		$isSpam = craft()->spamGuard->isSpam($data);
 
-		if ($isSpam && $onFailure && is_callable($onFailure))
-		{
-			$onFailure($data);
-		}
-
-		if (!$isSpam && $onSuccess && is_callable($onSuccess))
-		{
-			$onSuccess($data);
-		}
-
-		return $isSpam;
-	}
-
-	public function onAfterInstall()
-	{
-		$cp = craft()->config->get('cpTrigger');
-
-		craft()->request->redirect("/{$cp}/settings/plugins/spamguard");
-	}
+/**
+ * Enables service layer encapsulation and proper hinting
+ *
+ * @return SpamGuardService
+ */
+function spamGuard()
+{
+	return craft()->spamGuard;
 }
