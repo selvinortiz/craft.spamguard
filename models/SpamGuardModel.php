@@ -1,13 +1,21 @@
 <?php
 namespace Craft;
 
+/**
+ * Class SpamGuardModel
+ *
+ * @author		Selvin Ortiz <selvin@selv.in>
+ * @package		Craft
+ * @copyright	2014 Selvin Ortiz
+ * @license		[MIT]
+ */
 class SpamGuardModel extends BaseModel
 {
 	public function defineAttributes()
 	{
 		return array(
 			'id'			=> array(AttributeType::Number),
-			'email'			=> array(AttributeType::Email,	'required'	=> true),
+			'email'			=> array(AttributeType::Email),
 			'author'		=> array(AttributeType::String,	'maxLength'	=> 50),
 			'content'		=> array(AttributeType::String,	'column'	=> ColumnType::Text),
 			'isKeyValid'	=> AttributeType::Bool,

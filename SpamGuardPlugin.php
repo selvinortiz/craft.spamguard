@@ -4,14 +4,15 @@ namespace Craft;
 /**
  * Spam Guard @v0.6.0
  *
- * Spam Guard harnesses the power of Akismet to fight spam on your behalf
+ * Spam Guard harnesses the power of Akismet to fight Spam
  *
- * @author		Selvin Ortiz - http://twitter.com/selvinortiz
- * @package		Spam Guard
+ * @author		Selvin Ortiz <selvin@selv.in>
+ * @version		0.6.0
+ * @package		Craft
  * @copyright	2014 Selvin Ortiz
- * @license		[MIT]
+ * @license		http://opensource.org/licenses/MIT
+ * @copyright	2014 Selvin Ortiz
  */
-
 class SpamGuardPlugin extends BasePlugin
 {
 	/**
@@ -22,10 +23,8 @@ class SpamGuardPlugin extends BasePlugin
 	 */
 	public function init()
 	{
-		Craft::import('plugins.spamguard.common.*');
-
 		#
-		# Support for contactForm.beforeSend()
+		# Support for Contact Forms
 		if ($this->getSettings()->getAttribute('enableContactFormSupport'))
 		{
 			craft()->on('contactForm.beforeSend', function(Event $event)
@@ -40,16 +39,32 @@ class SpamGuardPlugin extends BasePlugin
 		}
 
 		#
-		# Support for guestEntries.beforeSave()
+		# Support for Guest Entries
 		if ($this->getSettings()->getAttribute('enableGuestEntriesSupport'))
 		{
 			craft()->on('guestEntries.beforeSave', function(Event $event)
 			{
-				$spam = spamGuard()->detectGuestEntrySpam($event->params['entry']);
+				$spam = spamGuard()->detectDynamicFormSpam($event->params['entry']);
 
 				if ($spam)
 				{
 					$event->fakeIt = true;
+				}
+			});
+		}
+
+		#
+		# Support for Sprout Forms
+		if ($this->getSettings()->getAttribute('enableSproutFormsSupport'))
+		{
+			craft()->on('sproutForms.beforeSaveEntry', function(Event $event)
+			{
+				$spam = spamGuard()->detectDynamicFormSpam($event->params['entry']);
+
+				if ($spam)
+				{
+					$event->fakeIt	= true;
+					$event->isValid	= false;
 				}
 			});
 		}
@@ -104,6 +119,16 @@ class SpamGuardPlugin extends BasePlugin
 	/**
 	 * @return array
 	 */
+	public function registerCpRoutes()
+	{
+		return array(
+			'spamguard'	=> array('action' => 'spamGuard/index')
+		);
+	}
+
+	/**
+	 * @return array
+	 */
 	public function defineSettings()
 	{
 		return array(
@@ -111,6 +136,7 @@ class SpamGuardPlugin extends BasePlugin
 			'akismetOriginUrl'			=> array(AttributeType::String,	'required'	=> true),
 			'enableContactFormSupport'	=> array(AttributeType::Bool,	'default'	=> true),
 			'enableGuestEntriesSupport'	=> array(AttributeType::Bool,	'default'	=> true),
+			'enableSproutFormsSupport'	=> array(AttributeType::Bool,	'default'	=> true),
 			'logSubmissions'			=> array(AttributeType::Bool,	'default'	=> false),
 			'enableCpTab'				=> array(AttributeType::Bool,	'default'	=> true),
 			'pluginAlias'				=> AttributeType::String,
@@ -122,11 +148,9 @@ class SpamGuardPlugin extends BasePlugin
 	 */
 	public function getSettingsHtml()
 	{
-		$settings = $this->getSettings();
-
 		craft()->templates->includeCssResource('spamguard/css/spamguard.css');
 
-		return craft()->templates->render('spamguard/_settings', compact('settings'));
+		return craft()->templates->render('spamguard/_settings', spamGuard()->getTemplateVariables());
 	}
 }
 

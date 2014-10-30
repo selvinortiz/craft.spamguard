@@ -1,4 +1,5 @@
-.spamguardSettings h2, .spamguardSettings h3 {
+.spamguardSettings h2,
+.spamguardSettings h3 {
   color: #444;
 }
 .spamguardSettings h3.glyph {
@@ -35,6 +36,9 @@
 }
 .spamguardActionSet {
   margin: 40px 0;
+}
+.spamguardSpam td {
+  color: #d00;
 }
 .introvert {
   color: #999;

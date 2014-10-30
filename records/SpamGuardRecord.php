@@ -1,6 +1,14 @@
 <?php
 namespace Craft;
 
+/**
+ * Class SpamGuardRecord
+ *
+ * @author		Selvin Ortiz <selvin@selv.in>
+ * @package		Craft
+ * @copyright	2014 Selvin Ortiz
+ * @license		[MIT]
+ */
 class SpamGuardRecord extends BaseRecord
 {
 	public function getTableName()

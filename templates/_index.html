@@ -1,0 +1,59 @@
+{% extends "_layouts/cp" %}
+
+{% set title = "Logged Submissions" %}
+{% set extraPageHeaderHtml %}
+	<a class="btn settings icon" href="{{ url('settings/plugins/spamguard') }}" title="{{ 'Settings'|t }}"></a>
+{% endset %}
+
+{% set content %}
+	{% if logs is defined or logs|length %}
+		<table class="data grid fullwidth spamguardGrid">
+			<tr>
+				<th>Time</th>
+				<th>Email</th>
+				<th>Author</th>
+				<th colspan="2" style="width: 50%;">Content</th>
+			</tr>
+			{% for log in logs %}
+				<tr{{ log.flaggedAsSpam ? ' class="spamguardSpam"' : '' }}>
+					<td>{{ log.dateCreated.localeDate()~' '~log.dateCreated.localeTime() }}</td>
+					<td>{{ log.email }}</td>
+					<td>{{ log.author }}</td>
+					<td class="typewriter">{{ log.content|nl2br }}</td>
+					<td>
+						<form action="" method="POST">
+							<input type="hidden" name="action" value="spamGuard/deleteLog"/>
+							<input type="hidden" name="id" value="{{ log.id }}"/>
+
+							<button type="submit" class="btn icon delete" style="margin-top: -4px;">Delete</button>
+						</form>
+					</td>
+				</tr>
+			{% endfor %}
+		</table>
+		<div class="spamguardActionSet">
+			<div>
+				<form action="" method="POST">
+					<input type="hidden" name="action" value="spamGuard/deleteLogs"/>
+					<input type="hidden" name="confirmation" value=""/>
+					<button type="submit" class="btn submit icon">Delete Everything</button>
+					<p>
+						<input type="checkbox" name="confirmation" value="1"/>
+						<span class="introvert">Yes, I want to delete everything!</span>
+					</p>
+				</form>
+			</div>
+		</div>
+	{% else %}
+		<p>Nothing yet, you have a clean slate for now: )</p>
+	{% endif %}
+
+	<div class="spamguardSection credits">
+		<p>
+			&copy; {{ "now" | date("Y") }}
+			<strong>{{ name }} <span class="spamguardSubtle">({{ version }})</span></strong>
+			Lovingly crafted by
+			<a href="{{- developerUrl -}}" title="@selvinortiz" target="_blank">{{- developer -}}</a>
+		</p>
+	</div>
+{% endset %}

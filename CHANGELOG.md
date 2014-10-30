@@ -4,6 +4,17 @@ Lovingly crafted by [Selvin Ortiz][developer] for [Craft CMS][craftcms]
 
 ## Changelog
 
+### 0.6.0
+- Adds support for [Sprout Forms][sproutforms]
+- Adds the `SpamGuardInvalidKeyException` class to the `Craft` namespace
+- Improves the **Logged Submissions** template with faster load times
+- Improves documentation for **Guest Entries** support
+- Removes external libraries
+- Removes composer dependency
+- Removes the `SpamGuardVariable` class
+- Removes the `spamGuardDetectSpam()` plugin hook
+- Removes the `InvalidKeyException` class
+
 ### 0.5.5
 - Adds `InvalidKeyException` reference to `submitSpam()` and `submitHam()`
 - Adds the ability to use `{siteUrl}` as the **Origin URL** in settings
@@ -17,14 +28,14 @@ Lovingly crafted by [Selvin Ortiz][developer] for [Craft CMS][craftcms]
 ### 0.5.3
 - Adds native support for [Guest Entries][guestentries] by [P&T][pixelandtonic]
 - Fixes a typo in the footer from code reuse outlined on issue #2
-- Improves the way that the *User IP* is retrieved
+- Improves the way the *User IP* is retrieved
 - Improves settings handling methods
 
 ### 0.5.2
 - Adds automatic redirection to `Settings > Plugins > Spam Guard` after install
 
 ### 0.5.1
-- Adds setting to opt out of submission loggin
+- Adds setting to opt out of submission logging
 - Adds the audit column properties to the `SpamGuardModel`
 - Fixes line endings and platform inconsistencies
 - Improves the layout and clarity of the settings template
@@ -105,4 +116,5 @@ Initial proof of concept release
 [akismet]:http://akismet.com "Akismet"
 [contactform]:https://github.com/pixelandtonic/ContactForm "Contact Form"
 [guestentries]:https://github.com/pixelandtonic/GuestEntries "Guest Entries"
+[sproutforms]:http://sprout.barrelstrengthdesign.com/craft-plugins/forms "Sprout Forms"
 [pixelandtonic]:http://pixelandtonic.com "Pixel & Tonic"

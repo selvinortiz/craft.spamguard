@@ -1,18 +1,12 @@
 {% import "_includes/forms" as forms %}
 
-{% set name			= craft.spamguard.getName(true) %}
-{% set alias		= craft.spamguard.getName() %}
-{% set version		= craft.spamguard.getVersion() %}
-{% set developer	= craft.spamguard.getDeveloper() %}
-{% set developerUrl	= craft.spamguard.getDeveloperUrl() %}
-
 {% block content %}
 	<div class="spamguardSettings">
 		<h2>
-			{{ name }} <span class="spamguardSubtle">V{{ version }} {% if alias != name %}AKA ({{ alias }}){% endif %}</span>
+			{{ name }} <span class="spamguardSubtle">{{ version }} {% if alias != name %}AKA ({{ alias }}){% endif %}</span>
 		</h2>
 		<p>
-			Spam Guard harnesses the power of <a href="http://akismet" target="_blank">Akismet</a> to fight spam on your behalf.
+			Spam Guard harnesses the power of <a href="http://akismet" target="_blank">Akismet</a> to fight Spam
 		</p>
 
 		<div class="spamguardSection">
@@ -22,7 +16,7 @@
 					id:				"akismetApiKey",
 					name:			"akismetApiKey",
 					label:			"Akismet API Key"|t,
-					instructions:	"The [Akismet](http://akismet.com) service requires a _WordPress_ API Key."|t,
+					instructions:	"The [Akismet](http://akismet.com) service requires a **WordPress** API Key."|t,
 					value:			settings.akismetApiKey,
 					first:			true,
 					autofocus:		true,
@@ -34,7 +28,7 @@
 					id:				"akismetOriginUrl",
 					name:			"akismetOriginUrl",
 					label:			"Origin URL"|t,
-					instructions:	"Your website "~siteUrl~" or blog URL"|t,
+					instructions:	"Your website or blog URL"|t,
 					value:			settings.akismetOriginUrl,
 					first:			false,
 					autofocus:		false,
@@ -75,18 +69,26 @@
 					errors:			""
 				})
 			}}
+			{{
+				forms.checkboxField({
+					id:				"enableSproutFormsSupport",
+					name:			"enableSproutFormsSupport",
+					label:			"Enable Sprout Forms Support?"|t,
+					checked:		settings.enableSproutFormsSupport,
+					instructions:	"This features requires [Sprout Forms 0.8](http://sprout.barrelstrengthdesign.com/craft-plugins/forms) or above"|t,
+					errors:			""
+				})
+			}}
 		</div>
 
 		<div class="spamguardSection">
 			<h3 class="glyph settings">Plugin Settings</h3>
+			<p>Display Plugin Tab?</p>
 			{{
-				forms.checkboxField({
-					id:				"enableCpTab",
-					name:			"enableCpTab",
-					label:			"Display Plugin Tab?"|t,
-					checked:		settings.enableCpTab,
-					instructions:	"This features shows/hides the plugin tab in the main navigation"|t,
-					errors:			""
+				forms.lightswitch({
+				name:		"enableCpTab",
+				on:			settings.enableCpTab,
+				disabled:	configs.restrictedAreas is defined ? true : false
 				})
 			}}
 			{{
