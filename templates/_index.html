@@ -6,7 +6,7 @@
 {% endset %}
 
 {% set content %}
-	{% if logs is defined or logs|length %}
+	{% if logs is defined and logs|length %}
 		<table class="data grid fullwidth spamguardGrid">
 			<tr>
 				<th>Time</th>

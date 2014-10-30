@@ -10,7 +10,7 @@ Lovingly crafted by [Selvin Ortiz][developer] for [Craft CMS][craftcms]
 1. Proven _Spam Fighting_ capabilities with the help of [Akismet][akismet]
 2. Native support for the [Contact Form Plugin][contactform]
 3. Native support for the [Guest Entries Plugin][guestentries] 
-4. Upcoming support for the **Sprout Forms Plugin**
+4. Native support for the [Sprout Forms](http://sprout.barrelstrengthdesign.com/craft-plugins/forms)
 5. Clean and efficient codebase with good documentation
 6. Friendly developer support via **Github**, [Twitter][developer], and via email at <selvin@selv.in>
 
