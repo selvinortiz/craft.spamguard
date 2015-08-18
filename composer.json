@@ -1,5 +1,5 @@
 {
-    "name": "selvinortiz/craft-spamguard",
+    "name": "selvinortiz/spamguard",
     "description": "Spam Guard harnesses the power of Akismet to fight Spam.",
     "homepage": "https://github.com/selvinortiz/craft.spamguard",
     "license": "MIT",
