@@ -22,6 +22,7 @@
 					<td class="typewriter">{{ log.content|nl2br }}</td>
 					<td>
 						<form action="" method="POST">
+							{{ getCsrfInput() }}
 							<input type="hidden" name="action" value="spamGuard/deleteLog"/>
 							<input type="hidden" name="id" value="{{ log.id }}"/>
 
@@ -34,6 +35,7 @@
 		<div class="spamguardActionSet">
 			<div>
 				<form action="" method="POST">
+					{{ getCsrfInput() }}
 					<input type="hidden" name="action" value="spamGuard/deleteLogs"/>
 					<input type="hidden" name="confirmation" value=""/>
 					<button type="submit" class="btn submit icon">Delete Everything</button>

@@ -1,0 +1,13 @@
+{
+    "name": "selvinortiz/spamguard",
+    "description": "Spam Guard harnesses the power of Akismet to fight Spam.",
+    "homepage": "https://github.com/selvinortiz/craft.spamguard",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Selvin Ortiz",
+            "email": "selvin@selvin.co"
+        }
+    ],
+    "type": "craft-plugin"
+}
