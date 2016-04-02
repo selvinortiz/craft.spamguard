@@ -316,6 +316,26 @@ class SpamGuardService extends BaseApplicationComponent
 	}
 
 	/**
+	 * Comments onBeforeSaveComment()
+	 *
+	 * Allows you to use spamguard alongside the Comments plugin
+	 *
+	 * @since	0.6.0
+	 * @param	array $form
+	 * @return	boolean
+	 */
+	public function detectCommentsSpam(BaseModel $comment)
+	{
+		$data = array(
+			'content'	=> $comment->comment,
+			'author'	=> $comment->author->fullName,
+			'email'		=> $comment->author->email,
+		);
+
+		return $this->isSpam($data);
+	}
+
+	/**
 	 * Deletes a log by id
 	 *
 	 * @param $id
