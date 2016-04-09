@@ -68,6 +68,21 @@ class SpamGuardPlugin extends BasePlugin
 				}
 			});
 		}
+
+		#
+		# Support for Comments
+		if ($this->getSettings()->getAttribute('enableCommentsSupport'))
+		{
+			craft()->on('comments.onBeforeSaveComment', function(Event $event)
+			{
+				$spam = spamGuard()->detectCommentsSpam($event->params['comment']);
+
+				if ($spam)
+				{
+					$event->performAction = false;
+				}
+			});
+		}
 	}
 
 	/**
@@ -137,6 +152,7 @@ class SpamGuardPlugin extends BasePlugin
 			'enableContactFormSupport'	=> array(AttributeType::Bool,	'default'	=> true),
 			'enableGuestEntriesSupport'	=> array(AttributeType::Bool,	'default'	=> true),
 			'enableSproutFormsSupport'	=> array(AttributeType::Bool,	'default'	=> true),
+			'enableCommentsSupport'		=> array(AttributeType::Bool,	'default'	=> true),
 			'logSubmissions'			=> array(AttributeType::Bool,	'default'	=> false),
 			'enableCpTab'				=> array(AttributeType::Bool,	'default'	=> true),
 			'pluginAlias'				=> AttributeType::String,
